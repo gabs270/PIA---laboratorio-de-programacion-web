@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h1>Perfil</h1>
+{% if user.is_authenticated %}
+             <div class="container row">
+                <div class="alert alert-dark" role="alert">
+                    hola {{usuarioactual}}
+                  </div>
+             </div> 
+             <div class="row justify-content-center">
+                <div class="col-4">
+                    <div class="text-center">
+                        <img src="tu-imagen.jpg" class="rounded-circle img-thumbnail" alt="Circular con borde" style="width: 200px; height: 200px;">
+                      </div>
+                </div>
+                <div class="col-4">
+                    <label class="fs-3 text-capitalize" name="nombrecompleto"><b>{{nombrecompleto}}</b></label><br>
+                    <label name="nombredeusuario"><b>{{usuarioactual}}</b></label><br>
+                    <label name="direccion">{{direccion}}</label><br>
+                    <label name="telefono">{{telefono}}</label><br>
+                    <label name="correo">{{correo}}</label><br>
+                </div>
+                <div class="col-1  align-self-end">
+                    <a href="/editardatos"><button type="button" class="btn btn-secondary">Editar</button></a>
+                </div>
+              </div>  
+
+{% else %}
+<div class="container m-50">
+    <div class="alert alert-dark" role="alert">
+        Favor de iniciar sesion.
+      </div>
+</div>   
+{% endif %}
+
+
+
+{% endblock %}

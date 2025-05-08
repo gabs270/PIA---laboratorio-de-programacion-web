@@ -1,8 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<h1>Datos</h1>
-
+<h1>Editar datos</h1>
 
 <form method="post" class="border rounded p-3">
     {% if error %}
@@ -21,17 +20,19 @@
                 <input type="text" class="form-control" placeholder="{{usuarioactual}}" name="username" id="username"  disabled>
             </div>
             <div class="col-10 p-3">
-                <input type="text" class="form-control" placeholder="Nombre Completo" name="nombrecompleto" id="nombrecompleto"  >
+                <input type="text" class="form-control text-capitalize" value="{{nombrecompleto}}" name="nombrecompleto" id="nombrecompleto"  >
             </div>
             <div class="col-10 p-3">
-                <input type="text" class="form-control" placeholder="Direccion" name="direccion" id="direccion"  >
+                <input type="text" class="form-control" value="{{direccion}}" name="direccion" id="direccion"  >
             </div>
             <div class="col-10 p-3">
-                <input type="text" class="form-control" placeholder="Telefono de contacto" name="telefono" id="telefono"  >
+                <input type="text" class="form-control" value="{{telefono}}" name="telefono" id="telefono"  >
             </div>
             <div class="col-10 p-3">
-                <input type="email" class="form-control" placeholder="Correo de contacto" name="correo" id="correo"  >
+                <input type="email" class="form-control" value="{{correo}}" name="correo" id="correo"  >
             </div>
+            
+            <button class="btn btn-primary ">Terminar</button>
         </div>
         <div class="col-6">
             <div class="col-10 p-3">
@@ -43,14 +44,6 @@
       </div>
     </div>
     
-    <button class="btn btn-primary ">Registrarse</button>
-  
-    {% if mensaje %}
-            <div class="alert alert-danger" role="alert">
-                {{mensaje}}
-            </div>
-        {% endif %}
 </form>
-  
 
 {% endblock %}
