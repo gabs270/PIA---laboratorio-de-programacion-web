@@ -76,7 +76,7 @@ WSGI_APPLICATION = 'crud.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'mssql',
-        'NAME': 'BaseDeDatosDeEjemplo',
+        'NAME': 'basededatosdos',
         'USER': 'django',
         'PASSWORD': '123',
         'HOST': 'localhost',

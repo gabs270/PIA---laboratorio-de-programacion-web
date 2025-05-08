@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h1>Datos</h1>
+
+
+<form method="post" class="border rounded p-3">
+    {% if error %}
+            <div class="alert alert-danger" role="alert">
+                {{error}}
+            </div>
+        {% endif %}
+    
+        
+        {% csrf_token %}
+    <div class="mb-3">
+      <div class="row">
+        <div class="col-6">
+            <div class="col-10 p-3">
+                <label  class="form-label" >Nombre de Usuario</label>
+                <input type="text" class="form-control" placeholder="{{usuarioactual}}" name="username" id="username"  disabled>
+            </div>
+            <div class="col-10 p-3">
+                <input type="text" class="form-control" placeholder="Nombre Completo" name="nombrecompleto" id="nombrecompleto"  >
+            </div>
+            <div class="col-10 p-3">
+                <input type="text" class="form-control" placeholder="Direccion" name="direccion" id="direccion"  >
+            </div>
+            <div class="col-10 p-3">
+                <input type="text" class="form-control" placeholder="Telefono de contacto" name="telefono" id="telefono"  >
+            </div>
+            <div class="col-10 p-3">
+                <input type="text" class="form-control" placeholder="Correo de contacto" name="correo" id="correo"  >
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="col-10 p-3">
+                <input type="text" class="form-control" placeholder="{{idusuario}}" name="username" id="username"  >
+            </div>
+        </div>
+      </div>
+    </div>
+    
+    <button class="btn btn-primary ">Registrarse</button>
+  </form>
+  {% if mensaje %}
+            <div class="alert alert-danger" role="alert">
+                {{mensaje}}
+            </div>
+        {% endif %}
+
+{% endblock %}
