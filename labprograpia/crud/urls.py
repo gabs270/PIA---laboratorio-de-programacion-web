@@ -29,7 +29,10 @@ urlpatterns = [
     path('logout', views.signout, name='logout'),
     path('signin', views.signin, name='signin'),
     path('perfil', views.perfil, name='perfil'),
-    path('editardatos', views.editardatos, name='editardatos')
+    path('editardatos', views.editardatos, name='editardatos'),
+    path('nuevoarticulo', views.nuevoarticulo, name='nuevoarticulo'),
+    path('favoritos', views.favoritos, name='favoritos'),
+    path('publicados', views.publicados, name='publicados')
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

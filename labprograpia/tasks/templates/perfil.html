@@ -12,7 +12,7 @@
              <div class="row justify-content-center">
                 <div class="col-4">
                     <div class="text-center">
-                        <img src="/media/avatars/avatar_{{user.username}}.png"  
+                        <img src="{{ MEDIA_URL }}{{foto}}?v={% now 'U' %}"  
                         alt="Avatar del usuario" class="rounded-circle img-thumbnail" alt="Circular con borde" style="width: 200px; height: 200px;">
                     </div>
                 </div>
@@ -28,6 +28,20 @@
                 </div>
               </div>  
 
+    <div class="container text-center m-5">
+    <div class="row align-items-center">
+        <div class="col">
+            <a href="/favoritos"><button type="button" class="btn btn-primary p-3">Articulos Favoritos</button></a>
+        </div>
+        <div class="col">
+            <a href="/publicados"><button type="button" class="btn btn-primary p-3">Articulos Publicados</button></a>
+        </div>
+        <div class="col">
+            <a href="/nuevoarticulo"><button type="button" class="btn btn-primary p-3">Nuevo Articulo</button></a>
+        </div>
+    </div>
+    </div>
+
 {% else %}
 <div class="container m-50">
     <div class="alert alert-dark" role="alert">
@@ -35,6 +49,8 @@
       </div>
 </div>   
 {% endif %}
+
+
 
 
 

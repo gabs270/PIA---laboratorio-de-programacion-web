@@ -1,10 +1,11 @@
 from django.shortcuts import render, redirect,get_object_or_404
 from django.contrib.auth.models import User
 from django.contrib.auth import login, logout, authenticate
-from .models import usuarios 
+from .models import usuarios, categorias,articulos,imagenes_articulos
 from django.db import IntegrityError
 from django.conf import settings
 import os
+from datetime import datetime
 
 
 # Create your views here.
@@ -110,18 +111,21 @@ def signin(request):
         else:
                 login(request, user)
                 return redirect('home')
-    
-    
+
 def perfil(request):
-    registro = get_object_or_404(usuarios, id_usuario=request.user.id)
-    return render(request,'perfil.html',{
+    try:
+        registro = get_object_or_404(usuarios, id_usuario=request.user.id)
+        return render(request,'perfil.html',{
         'usuarioactual':request.user.username,
         'nombrecompleto':registro.nombre_completo,
         'direccion':registro.direccion,
         'telefono':registro.telefono,
-        'correo':registro.email
-        
-    })
+        'correo':registro.email,
+        'foto':registro.avatar_url    
+        })
+    except:
+        return render(request,'perfil.html')
+    
     
 def editardatos(request):
     registro = get_object_or_404(usuarios, id_usuario=request.user.id)
@@ -137,28 +141,29 @@ def editardatos(request):
                 if request.method == 'POST' and request.FILES.get('avatar'):
                     avatar_file = request.FILES['avatar']
                     print(request.FILES)
-                    if registro.avatar_url:
-                        registro.avatar_url.delete()
                     
                     # Cambiar el nombre del archivo
                     extension = avatar_file.name.split('.')[-1]
                     nuevo_nombre = f"avatar_{request.user.username}.{extension}"
                     avatar_file.name = nuevo_nombre
+                   
                     
                     upload_dir = os.path.join(settings.MEDIA_ROOT, 'avatars')
                     os.makedirs(upload_dir, exist_ok=True)
+                    
                     
                     file_path = f'avatars/{avatar_file.name}'  # Ruta relativa (ej: 'avatars/foto.jpg')
                     with open(os.path.join(settings.MEDIA_ROOT, file_path), 'wb+') as f:
                         for chunk in avatar_file.chunks():
                             f.write(chunk)
                     registro.avatar_url = file_path
+                        
                     
                     if registro.nombre_completo and registro.direccion and registro.telefono and registro.email:  
                         registro.save()
                         return redirect('perfil')
                     else:
-                        return render(request, 'editardatos.html', {'error':'Todos los campos son obligatorios','registro': registro,'usuarioactual':usuarioactual,'idusuario':idusuario,'nombrecompleto':registro.nombre_completo,'direccion':registro.direccion,'telefono':registro.telefono,'correo':registro.email,})
+                        return render(request, 'editardatos.html', {'error':'Todos los campos son obligatorios','foto':registro.avatar_url, 'registro': registro,'usuarioactual':usuarioactual,'idusuario':idusuario,'nombrecompleto':registro.nombre_completo,'direccion':registro.direccion,'telefono':registro.telefono,'correo':registro.email,})
                          
                 else:            
                     
@@ -166,10 +171,10 @@ def editardatos(request):
                         registro.save()
                         return redirect('perfil')
                     else:
-                        return render(request, 'editardatos.html', {'error':'Todos los campos son obligatorios','registro': registro,'usuarioactual':usuarioactual,'idusuario':idusuario,'nombrecompleto':registro.nombre_completo,'direccion':registro.direccion,'telefono':registro.telefono,'correo':registro.email,})
+                        return render(request, 'editardatos.html', {'error':'Todos los campos son obligatorios','foto':registro.avatar_url ,'registro': registro,'usuarioactual':usuarioactual,'idusuario':idusuario,'nombrecompleto':registro.nombre_completo,'direccion':registro.direccion,'telefono':registro.telefono,'correo':registro.email,})
                             
     else:   
-                return render(request, 'editardatos.html', {'registro': registro,
+                return render(request, 'editardatos.html', {'registro': registro,'foto':registro.avatar_url ,
                 'usuarioactual':usuarioactual,
                 'idusuario':idusuario,
                 'nombrecompleto':registro.nombre_completo,
@@ -179,3 +184,98 @@ def editardatos(request):
                 })
 
     
+    
+def nuevoarticulo(request):
+    datos = categorias.objects.all().values_list('id_categoria', 'nombre')
+    if request.method=='POST':
+        
+        autor=request.user.id
+        print(autor)
+        titulo = request.POST.get('titulo')
+        lugar = request.POST.get('lugar')
+        fecha_acontecimient = request.POST.get('fecha')
+        descripcion = request.POST.get('descripcion')
+        lacategoria=request.POST.get('categoria')
+        
+        if request.method == 'POST' and titulo and lugar and fecha_acontecimient and descripcion and lacategoria:
+            crear_articulo = articulos(
+                autor_id=request.user.id,
+                titulo=titulo,
+                lugar=lugar,
+                fecha_acontecimiento=fecha_acontecimient,
+                descripcion=descripcion,
+                fecha_actualizacion=datetime.now()
+                )
+            categoriaa = categorias.objects.get(id_categoria=lacategoria)
+            crear_articulo.categoria_id = categoriaa.id_categoria
+            crear_articulo.save()
+        else:
+            return render(request, 'nuevoarticulo.html', {'error':'Todos los campos son obligatorios', 'opciones': datos})   
+            
+        id_articulo = crear_articulo.id_articulo
+        print(id_articulo)
+        if request.method == 'POST' and request.FILES.get('imgprincipal'):
+                    imgprincipal=request.FILES['imgprincipal']
+                    
+                    extension = imgprincipal.name.split('.')[-1]
+                    nuevo_nombre = f"imagenprincipal_articulo{id_articulo}_Usuario{request.user.username}.{extension}"
+                    imgprincipal.name = nuevo_nombre
+                   
+                    upload_dir = os.path.join(settings.MEDIA_ROOT, 'imagenesArticulos')
+                    os.makedirs(upload_dir, exist_ok=True)
+                    
+                    file_path = f'imagenesArticulos/{imgprincipal.name}' 
+                    with open(os.path.join(settings.MEDIA_ROOT, file_path), 'wb+') as f:
+                        for chunk in imgprincipal.chunks():
+                            f.write(chunk)
+                            
+                    crear_imagen= imagenes_articulos(
+                        articulo_id=id_articulo,
+                        es_principal=1,
+                        url_imagen=file_path,
+                        fecha_creacion=datetime.now()
+                    )
+                    crear_imagen.save()
+        else:
+            return render(request, 'nuevoarticulo.html', {'error':'Todos los campos son obligatorios', 'opciones': datos}) 
+                    
+        if request.method == 'POST' and request.FILES.get('imgsarticulo'):
+                    
+                    for archivo in request.FILES.getlist('imgsarticulo'):
+                        
+                        extension = archivo.name.split('.')[-1]
+                        nuevo_nombre = f"imgsarticulo_articulo{id_articulo}_Usuario{request.user.username}.{extension}"
+                        archivo.name = nuevo_nombre
+                    
+                        upload_dir = os.path.join(settings.MEDIA_ROOT, 'imagenesArticulos')
+                        os.makedirs(upload_dir, exist_ok=True)
+                        
+                        file_path = f'imagenesArticulos/{archivo.name}' 
+                        with open(os.path.join(settings.MEDIA_ROOT, file_path), 'wb+') as f:
+                            for chunk in archivo.chunks():
+                                f.write(chunk)
+                                
+                        crear_imagen= imagenes_articulos(
+                            articulo_id=id_articulo,
+                            es_principal=0,
+                            url_imagen=file_path,
+                            fecha_creacion=datetime.now()
+                        )
+                        crear_imagen.save()                    
+                    return redirect('perfil')
+        else:
+            return render(request, 'nuevoarticulo.html', {'error':'Todos los campos son obligatorios', 'opciones': datos}) 
+    
+    else:
+        return render(request, 'nuevoarticulo.html', {'opciones': datos})
+   
+
+
+
+def publicados(request):
+    return render(request, 'publicados.html')
+
+
+
+def favoritos(request):
+    return render(request, 'favoritos.html')

@@ -27,7 +27,7 @@
                 <input type="text" class="form-control" value="{{direccion}}" name="direccion" id="direccion"  >
             </div>
             <div class="col-10 p-3">
-                <input type="text" class="form-control" value="{{telefono}}" name="telefono" id="telefono"  >
+                <input type="tel" class="form-control" value="{{telefono}}" name="telefono" id="telefono"  >
             </div>
             <div class="col-10 p-3">
                 <input type="email" class="form-control" value="{{correo}}" name="correo" id="correo"  >
@@ -38,10 +38,10 @@
         <div class="col-6">
             <div class="col-10 p-3">
                 <div class="text-center">
-                    <img src="/media/avatars/avatar_{{user.username}}.png"  
+                     <img src="{{MEDIA_URL}}{{foto}}?v={% now 'U' %}"   
                         alt="Avatar del usuario" class="rounded-circle img-thumbnail" alt="Circular con borde" style="width: 200px; height: 200px;">
                     
-                    <input type="file" name="avatar" accept="image/png" >
+                    <input class="form-control" type="file" name="avatar" accept="image/png" >
                 </div>
             </div>
         </div>
