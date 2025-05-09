@@ -1,18 +1,20 @@
 {% extends 'base.html' %}
 {% block content %}
+{% load static %}
 
 <h1>Perfil</h1>
 {% if user.is_authenticated %}
              <div class="container row">
                 <div class="alert alert-dark" role="alert">
-                    hola {{usuarioactual}}
+                    Hola, {{usuarioactual}}!
                   </div>
              </div> 
              <div class="row justify-content-center">
                 <div class="col-4">
                     <div class="text-center">
-                        <img src="tu-imagen.jpg" class="rounded-circle img-thumbnail" alt="Circular con borde" style="width: 200px; height: 200px;">
-                      </div>
+                        <img src="/media/avatars/avatar_{{user.username}}.png"  
+                        alt="Avatar del usuario" class="rounded-circle img-thumbnail" alt="Circular con borde" style="width: 200px; height: 200px;">
+                    </div>
                 </div>
                 <div class="col-4">
                     <label class="fs-3 text-capitalize" name="nombrecompleto"><b>{{nombrecompleto}}</b></label><br>

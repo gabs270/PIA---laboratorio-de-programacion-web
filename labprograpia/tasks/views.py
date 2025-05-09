@@ -1,9 +1,11 @@
 from django.shortcuts import render, redirect,get_object_or_404
 from django.contrib.auth.models import User
 from django.contrib.auth import login, logout, authenticate
-from django.contrib.auth.decorators import login_required
 from .models import usuarios 
 from django.db import IntegrityError
+from django.conf import settings
+import os
+
 
 # Create your views here.
 def home(request):
@@ -42,8 +44,24 @@ def datosdeusuario(request):
         direccion = request.POST.get('direccion')
         telefono = request.POST.get('telefono')
         correo = request.POST.get('correo')
+        avatar_file = request.FILES['avatar']
+        
 
         try:
+            # Cambiar el nombre del archivo
+            extension = avatar_file.name.split('.')[-1]
+            nuevo_nombre = f"avatar_{request.user.username}.{extension}"
+            avatar_file.name = nuevo_nombre
+                    
+            upload_dir = os.path.join(settings.MEDIA_ROOT, 'avatars')
+            os.makedirs(upload_dir, exist_ok=True)
+                    
+            file_path = f'avatars/{avatar_file.name}'  # Ruta relativa (ej: 'avatars/foto.jpg')
+            with open(os.path.join(settings.MEDIA_ROOT, file_path), 'wb+') as f:
+                for chunk in avatar_file.chunks():
+                    f.write(chunk)
+            
+            
             # Crear y guardar el registro usando el ORM
             crear_usuario = usuarios(
                 nombre_completo=nombre,
@@ -51,7 +69,8 @@ def datosdeusuario(request):
                 direccion=direccion,
                 telefono=telefono,
                 email=correo,
-                id_usuario=idusuario
+                id_usuario=idusuario,
+                avatar_url=file_path
                 
             )
             crear_usuario.save()
@@ -110,52 +129,53 @@ def editardatos(request):
     idusuario = request.user.id
     
     if request.method=='POST':
-        try:
-            registro.nombre_completo = request.POST.get('nombrecompleto')
-            registro.direccion = request.POST.get('direccion')
-            registro.telefono = request.POST.get('telefono')
-            registro.email = request.POST.get('correo')
-            if registro.nombre_completo and registro.direccion and registro.telefono and registro.email:  # Ejemplo de validación simple
-                registro.save()
-                return redirect('perfil')
-            else:
-                return render(request, 'editardatos.html', {
-                'error':'Todos los campos son obligatorios',
-                'registro': registro,
-                'usuarioactual':usuarioactual,
-                'idusuario':idusuario,
-                'nombrecompleto':registro.nombre_completo,
-                'direccion':registro.direccion,
-                'telefono':registro.telefono,
-                'correo':registro.email})
+                registro.nombre_completo = request.POST.get('nombrecompleto')
+                registro.direccion = request.POST.get('direccion')
+                registro.telefono = request.POST.get('telefono')
+                registro.email = request.POST.get('correo')
                 
-        except IntegrityError:
-            return render(request, 'editardatos.html',{
-                'error':'Error de integridad (Pruebe cambiando su email)',
+                if request.method == 'POST' and request.FILES.get('avatar'):
+                    avatar_file = request.FILES['avatar']
+                    print(request.FILES)
+                    if registro.avatar_url:
+                        registro.avatar_url.delete()
+                    
+                    # Cambiar el nombre del archivo
+                    extension = avatar_file.name.split('.')[-1]
+                    nuevo_nombre = f"avatar_{request.user.username}.{extension}"
+                    avatar_file.name = nuevo_nombre
+                    
+                    upload_dir = os.path.join(settings.MEDIA_ROOT, 'avatars')
+                    os.makedirs(upload_dir, exist_ok=True)
+                    
+                    file_path = f'avatars/{avatar_file.name}'  # Ruta relativa (ej: 'avatars/foto.jpg')
+                    with open(os.path.join(settings.MEDIA_ROOT, file_path), 'wb+') as f:
+                        for chunk in avatar_file.chunks():
+                            f.write(chunk)
+                    registro.avatar_url = file_path
+                    
+                    if registro.nombre_completo and registro.direccion and registro.telefono and registro.email:  
+                        registro.save()
+                        return redirect('perfil')
+                    else:
+                        return render(request, 'editardatos.html', {'error':'Todos los campos son obligatorios','registro': registro,'usuarioactual':usuarioactual,'idusuario':idusuario,'nombrecompleto':registro.nombre_completo,'direccion':registro.direccion,'telefono':registro.telefono,'correo':registro.email,})
+                         
+                else:            
+                    
+                    if registro.nombre_completo and registro.direccion and registro.telefono and registro.email:  
+                        registro.save()
+                        return redirect('perfil')
+                    else:
+                        return render(request, 'editardatos.html', {'error':'Todos los campos son obligatorios','registro': registro,'usuarioactual':usuarioactual,'idusuario':idusuario,'nombrecompleto':registro.nombre_completo,'direccion':registro.direccion,'telefono':registro.telefono,'correo':registro.email,})
+                            
+    else:   
+                return render(request, 'editardatos.html', {'registro': registro,
                 'usuarioactual':usuarioactual,
                 'idusuario':idusuario,
                 'nombrecompleto':registro.nombre_completo,
                 'direccion':registro.direccion,
                 'telefono':registro.telefono,
-                'correo':registro.email
-            })
-    else:
-            
-            return render(request, 'editardatos.html', {'registro': registro,
-        'usuarioactual':usuarioactual,
-        'idusuario':idusuario,
-        'nombrecompleto':registro.nombre_completo,
-        'direccion':registro.direccion,
-        'telefono':registro.telefono,
-        'correo':registro.email})
-    
-        
-    return render(request, 'editardatos.html',{
-        'usuarioactual':usuarioactual,
-        'idusuario':idusuario,
-        'nombrecompleto':registro.nombre_completo,
-        'direccion':registro.direccion,
-        'telefono':registro.telefono,
-        'correo':registro.email
-    })
+                'correo':registro.email,
+                })
+
     

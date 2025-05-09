@@ -204,7 +204,7 @@ class usuarios(models.Model):
     direccion = models.CharField(max_length=255, db_collation='SQL_Latin1_General_CP1253_CI_AI', blank=True, null=True)
     telefono = models.CharField(max_length=20, db_collation='SQL_Latin1_General_CP1253_CI_AI', blank=True, null=True)
     email = models.CharField(unique=True, max_length=100, db_collation='SQL_Latin1_General_CP1253_CI_AI')
-    avatar_url = models.CharField(max_length=255, db_collation='SQL_Latin1_General_CP1253_CI_AI', blank=True, null=True)
+    avatar_url = models.ImageField(upload_to="avatares/", blank=True, null=True)
     es_administrador = models.BooleanField(blank=True, null=True)
 
   

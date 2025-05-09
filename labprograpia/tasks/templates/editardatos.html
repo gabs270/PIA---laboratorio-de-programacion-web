@@ -1,9 +1,10 @@
 {% extends 'base.html' %}
 {% block content %}
+{% load static %}
 
 <h1>Editar datos</h1>
 
-<form method="post" class="border rounded p-3">
+<form method="post"  enctype="multipart/form-data" class="border rounded p-3">
     {% if error %}
             <div class="alert alert-danger" role="alert">
                 {{error}}
@@ -37,8 +38,11 @@
         <div class="col-6">
             <div class="col-10 p-3">
                 <div class="text-center">
-                    <img src="tu-imagen.jpg" class="rounded-circle img-thumbnail" alt="Circular con borde" style="width: 200px; height: 200px;">
-                  </div>
+                    <img src="/media/avatars/avatar_{{user.username}}.png"  
+                        alt="Avatar del usuario" class="rounded-circle img-thumbnail" alt="Circular con borde" style="width: 200px; height: 200px;">
+                    
+                    <input type="file" name="avatar" accept="image/png" >
+                </div>
             </div>
         </div>
       </div>
