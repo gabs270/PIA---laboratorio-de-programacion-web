@@ -241,10 +241,10 @@ def nuevoarticulo(request):
                     
         if request.method == 'POST' and request.FILES.get('imgsarticulo'):
                     
-                    for archivo in request.FILES.getlist('imgsarticulo'):
+                    for i, archivo in enumerate(request.FILES.getlist('imgsarticulo'), start=1):
                         
                         extension = archivo.name.split('.')[-1]
-                        nuevo_nombre = f"imgsarticulo_articulo{id_articulo}_Usuario{request.user.username}.{extension}"
+                        nuevo_nombre = f"imgsarticulo{i}_articulo{id_articulo}_Usuario{request.user.username}.{extension}"
                         archivo.name = nuevo_nombre
                     
                         upload_dir = os.path.join(settings.MEDIA_ROOT, 'imagenesArticulos')
@@ -273,9 +273,24 @@ def nuevoarticulo(request):
 
 
 def publicados(request):
-    return render(request, 'publicados.html')
-
+    registros = articulos.objects.filter(autor_id=request.user.id)
+    return render(request,'publicados.html', {'registros': registros})
 
 
 def favoritos(request):
     return render(request, 'favoritos.html')
+
+
+def detalle_articulo(request, pk):
+    articulo = get_object_or_404(articulos, pk=pk)
+    registros = articulos.objects.get(id_articulo=articulo.id_articulo)
+    imagenprincipal = articulos.objects.get(id_articulo=articulo.id_articulo)
+    
+    usuario = usuarios.objects.get(id_usuario=articulo.autor_id)
+    avatar_url = usuario.avatar_url
+    username=usuario.nombre_usuario
+
+    print(articulo)
+    print(usuario)
+    return render(request, 'detalle_articulo.html', {'articulo': articulo,
+        'registros': registros,'imagenprincipal':imagenprincipal, 'foto':avatar_url,'username':username})

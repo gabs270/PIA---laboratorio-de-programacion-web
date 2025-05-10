@@ -1,8 +1,46 @@
 {% extends 'base.html' %}
 {% block content %}
+{% load static %}
 
 <h1>Articulos Publicados</h1>
-{{usuarioactual}}
+
+
+
+    <div class="container text-center">
+    <div class="row ">
+        {% for registro in registros %}
+        <div class="col-md-6 mb-4">  <!-- Cambiado a col-md-6 para 2 columnas en pantallas medianas -->
+            <div class="card" style="width: 18rem;">
+                {% with registro.obtener_imagen_principal as imagen %}
+                    {% if imagen %}
+                        <img src="{{ MEDIA_URL }}{{ imagen.url_imagen }}" class="card-img-top card-img-fixed" alt="...">
+                    
+                    {% endif %}
+                {% endwith %}
+                <div class="card-body">
+                        <h5><a class="link-secondary" href="{% url 'detalle_articulo' registro.id_articulo %}">{{ registro.titulo }}</a></h5>
+                        
+                   
+                </div>
+            </div>
+        </div>
+        
+        <!-- Cada dos tarjetas, cerramos la fila y abrimos una nueva -->
+        {% if forloop.counter|divisibleby:2 and not forloop.last %}
+    </div>
+    <div class="row">
+        {% endif %}
+        
+        {% empty %}
+        <div class="col-12">
+            <p>No hay registros creados.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+        
+        
+
 
 
 

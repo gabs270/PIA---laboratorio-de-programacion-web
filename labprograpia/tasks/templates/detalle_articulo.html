@@ -1,0 +1,62 @@
+
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <h1>{{ articulo.titulo }}</h1>
+    <div class="container">
+        <div class="row">
+                <div class=" col col-md-9 col-sm-12">
+                
+                <article> 
+                    {% with imagenprincipal.obtener_imagen_principal as imagen %}
+                        {% if imagen %}
+                            <div class="row"><img src="{{ MEDIA_URL }}{{ imagen.url_imagen }}"height="350" class="col-md-12 col col-sm-12 card-img-fixed" alt="..."></div>
+                        {% endif %}
+                    {% endwith %}
+                    <div class="datos row">
+                        <div class="col-2">
+                            <img src="{{ MEDIA_URL }}{{foto}}?v={% now 'U' %}"  
+                            alt="Avatar del usuario" class="rounded-circle img-thumbnail" alt="Circular con borde" style="width: 40px; height: 40px;">
+                        </div>
+                        <div class="col-6">
+                            <p class="text-secondary"><b>Publicado por {{ username }}</b> <br>
+                                 el {{ articulo.fecha_actualizacion }}</p>
+                        </div>
+                        <div class=" col-sm-4 col ">
+                            <div class="row justify-content-end">
+                                <div class="col-6">
+                                    <button type="button" class="btn btn-secondary">Guardar</button>
+                                </div>
+                                <div class="col-6">
+                                    <button type="button" class="btn btn-secondary">Reportar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <p class="text-secondary">Lugar del acontecimiento: {{ articulo.lugar }} <br>
+                                 Fecha del acontecimiento: {{ articulo.fecha_acontecimiento }}</p>
+                        </div>
+                    </div>
+                    <div>{{ articulo.descripcion|linebreaks }}</div>
+                    <div class="row border" >
+                        {% for imagen in registros.obtener_imagenes_secundarias %}
+                            <div class="col-md-5 col-sm-8">
+                                <img src="{{ MEDIA_URL }}{{ imagen.url_imagen }}" height="200" width="200" class="m-2 card-img-fixed" alt="{{ imagen.descripcion }}">
+                            </div>
+                        {% endfor %}
+                    </div>
+                </article>
+                </div>
+
+
+
+                <div class="col col-lg-3 col-md-12">
+                    <div class=""><p>hola, estoy en la derecha</p></div>
+                </div>
+        </div> 
+    </div>
+    
+{% endblock %}
