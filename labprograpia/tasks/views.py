@@ -10,7 +10,15 @@ from datetime import datetime
 
 # Create your views here.
 def home(request):
-        return render (request, 'home.html')
+    # Obtener todos los artículos ordenados por fecha (más recientes primero)
+    articulos_list = articulos.objects.filter(estado='aceptado').order_by('-fecha_actualizacion')
+    for articulo in articulos_list:
+        articulo.imagen_principal = articulo.imagenes.filter(es_principal=True).first()
+    return render(request, 'home.html', {
+         'articulos': articulos_list
+    })
+    
+
 
 def signup(request):
 
@@ -51,7 +59,7 @@ def datosdeusuario(request):
         try:
             # Cambiar el nombre del archivo
             extension = avatar_file.name.split('.')[-1]
-            nuevo_nombre = f"avatar_{request.user.username}.{extension}"
+            nuevo_nombre = f"avatar_{request.user.id}.{extension}"
             avatar_file.name = nuevo_nombre
                     
             upload_dir = os.path.join(settings.MEDIA_ROOT, 'avatars')
@@ -189,8 +197,6 @@ def nuevoarticulo(request):
     datos = categorias.objects.all().values_list('id_categoria', 'nombre')
     if request.method=='POST':
         
-        autor=request.user.id
-        print(autor)
         titulo = request.POST.get('titulo')
         lugar = request.POST.get('lugar')
         fecha_acontecimient = request.POST.get('fecha')
@@ -204,7 +210,8 @@ def nuevoarticulo(request):
                 lugar=lugar,
                 fecha_acontecimiento=fecha_acontecimient,
                 descripcion=descripcion,
-                fecha_actualizacion=datetime.now()
+                fecha_actualizacion=datetime.now(),
+                estado='borrador'
                 )
             categoriaa = categorias.objects.get(id_categoria=lacategoria)
             crear_articulo.categoria_id = categoriaa.id_categoria
@@ -214,11 +221,12 @@ def nuevoarticulo(request):
             
         id_articulo = crear_articulo.id_articulo
         print(id_articulo)
+        
         if request.method == 'POST' and request.FILES.get('imgprincipal'):
                     imgprincipal=request.FILES['imgprincipal']
                     
                     extension = imgprincipal.name.split('.')[-1]
-                    nuevo_nombre = f"imagenprincipal_articulo{id_articulo}_Usuario{request.user.username}.{extension}"
+                    nuevo_nombre = f"imagenprincipal_articulo{id_articulo}_Usuario{request.user.id}.{extension}"
                     imgprincipal.name = nuevo_nombre
                    
                     upload_dir = os.path.join(settings.MEDIA_ROOT, 'imagenesArticulos')
@@ -289,8 +297,126 @@ def detalle_articulo(request, pk):
     usuario = usuarios.objects.get(id_usuario=articulo.autor_id)
     avatar_url = usuario.avatar_url
     username=usuario.nombre_usuario
-
-    print(articulo)
-    print(usuario)
+    
+    
+    articuloss = articulos.objects.filter(estado='aceptado')
+    articulosordenados = articulos.objects.filter(estado='aceptado').order_by('-fecha_actualizacion')
+    
+    for articuloordenado in articulosordenados:
+        articuloordenado.imagen_principal = articuloordenado.imagenes.filter(es_principal=True).first()
+    
     return render(request, 'detalle_articulo.html', {'articulo': articulo,
-        'registros': registros,'imagenprincipal':imagenprincipal, 'foto':avatar_url,'username':username})
+        'registros': registros,'imagenprincipal':imagenprincipal, 'foto':avatar_url,'username':username, 'articulos':articuloss, 'articulosordenados':articulosordenados})
+    
+    
+    
+    
+def editararticulos(request):
+    datos = categorias.objects.all().values_list('id_categoria', 'nombre')
+    id_articulo = request.GET.get('id_articulo')
+    articulo = articulos.objects.get(id_articulo=id_articulo)
+    
+    titulo = request.POST.get('titulo')
+    lugar = request.POST.get('lugar')
+    fecha_acontecimiento = request.POST.get('fecha')
+    descripcion = request.POST.get('descripcion')
+    lacategoria=request.POST.get('categoria')
+    fecha_actualizacion=datetime.now()
+        
+    if request.method=='POST':
+        if request.method=='POST' and titulo and lugar and fecha_acontecimiento and descripcion and lacategoria:
+            articulo.titulo = titulo
+            articulo.lugar = lugar
+            articulo.fecha_acontecimiento = fecha_acontecimiento
+            articulo.descripcion = descripcion
+            articulo.fecha_actualizacion=fecha_actualizacion
+        
+        
+            categoriaa = categorias.objects.get(id_categoria=lacategoria)
+            articulo.categoria_id = categoriaa.id_categoria
+            articulo.save()
+        else:
+            return render(request, 'editararticulos.html', {'error':'Todos los campos son obligatorios',
+            'articulo': articulo,
+            'opciones':datos, 
+            'titulo':articulo.titulo,
+            'lugar':articulo.lugar,
+            'fecha':articulo.fecha_acontecimiento,
+            'descripcion':articulo.descripcion                                          
+            })
+            
+        id_articulo = articulo.id_articulo
+            
+        if request.method == 'POST' and request.FILES.get('imgprincipal'):
+                        imgprincipal=request.FILES['imgprincipal']
+                        
+                        extension = imgprincipal.name.split('.')[-1]
+                        nuevo_nombre = f"imagenprincipal_articulo{id_articulo}_Usuario{request.user.id}.{extension}"
+                        imgprincipal.name = nuevo_nombre
+                    
+                        upload_dir = os.path.join(settings.MEDIA_ROOT, 'imagenesArticulos')
+                        os.makedirs(upload_dir, exist_ok=True)
+                        
+                        file_path = f'imagenesArticulos/{imgprincipal.name}' 
+                        if os.path.exists(file_path):
+                            os.remove(file_path)
+                        imagen_existente = imagenes_articulos.objects.get(url_imagen=file_path)
+                        print(imagen_existente)
+                        imagen_existente.delete()
+                        with open(os.path.join(settings.MEDIA_ROOT, file_path), 'wb+') as f:
+                            for chunk in imgprincipal.chunks():
+                                f.write(chunk)
+                                
+                        crear_imagen= imagenes_articulos(
+                            articulo_id=id_articulo,
+                            es_principal=1,
+                            url_imagen=file_path,
+                            fecha_creacion=datetime.now()
+                        )
+                        crear_imagen.save()
+        if request.method == 'POST' and request.FILES.get('imgsarticulo'):
+                        
+                        for i, archivo in enumerate(request.FILES.getlist('imgsarticulo'), start=1):
+                            
+                            extension = archivo.name.split('.')[-1]
+                            nuevo_nombre = f"imgsarticulo{i}_articulo{id_articulo}_Usuario{request.user.username}.{extension}"
+                            archivo.name = nuevo_nombre
+                        
+                            upload_dir = os.path.join(settings.MEDIA_ROOT, 'imagenesArticulos')
+                            os.makedirs(upload_dir, exist_ok=True)
+                            
+                            file_path = f'imagenesArticulos/{archivo.name}' 
+                            
+                            imagen_existente = imagenes_articulos.objects.filter(url_imagen=file_path).first()
+                            if imagen_existente:
+                                imagen_existente.delete()
+                            with open(os.path.join(settings.MEDIA_ROOT, file_path), 'wb+') as f:
+                                for chunk in archivo.chunks():
+                                    f.write(chunk)
+                                    
+                            crear_imagen= imagenes_articulos(
+                                articulo_id=id_articulo,
+                                es_principal=0,
+                                url_imagen=file_path,
+                                fecha_creacion=datetime.now()
+                            )
+                            crear_imagen.save()                    
+                        
+            
+
+        return render(request, 'editararticulos.html', {'articulo': articulo,'opciones':datos, 
+        'titulo':articulo.titulo,
+        'lugar':articulo.lugar,
+        'fecha':articulo.fecha_acontecimiento,
+        'descripcion':articulo.descripcion                                          
+        })  
+    else:
+        return render(request, 'editararticulos.html', {'articulo': articulo,'opciones':datos, 
+        'titulo':articulo.titulo,
+        'lugar':articulo.lugar,
+        'fecha':articulo.fecha_acontecimiento,
+        'descripcion':articulo.descripcion                                          
+        }) 
+        
+
+    

@@ -27,12 +27,12 @@ class articulos(models.Model):
 
     def obtener_imagen_principal(self):
         try:
-            return self.imagenes_articulos_set.get(es_principal=True)
+            return self.imagenes.get(es_principal=True)
         except imagenes_articulos.DoesNotExist:
             # Devuelve la primera imagen si no hay marcada como principal
-            return self.imagenes_articulos_set.first()
+            return self.imagenes.first()
     def obtener_imagenes_secundarias(self):
-        return self.imagenes_articulos_set.exclude(es_principal=True)
+        return self.imagenes.exclude(es_principal=True)
         
     def __str__(self):
         return str(self.id_articulo)
@@ -178,7 +178,7 @@ class favoritos(models.Model):
 
 class imagenes_articulos(models.Model):
     id_imagen = models.AutoField(primary_key=True)
-    articulo = models.ForeignKey(articulos, models.DO_NOTHING)
+    articulo = models.ForeignKey(articulos, models.DO_NOTHING,related_name='imagenes')
     url_imagen = models.CharField(max_length=255, db_collation='SQL_Latin1_General_CP1253_CI_AI')
     es_principal = models.BooleanField(blank=True, null=True)
     orden = models.IntegerField(blank=True, null=True)

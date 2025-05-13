@@ -33,7 +33,8 @@ urlpatterns = [
     path('nuevoarticulo', views.nuevoarticulo, name='nuevoarticulo'),
     path('favoritos', views.favoritos, name='favoritos'),
     path('publicados', views.publicados, name='publicados'),
-    path('<int:pk>/', views.detalle_articulo, name='detalle_articulo')
+    path('<int:pk>/', views.detalle_articulo, name='detalle_articulo'),
+    path('editararticulos', views.editararticulos, name='editararticulos'),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

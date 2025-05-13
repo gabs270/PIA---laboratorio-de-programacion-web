@@ -1,9 +1,27 @@
 {% extends 'base.html' %}
 {% block content %}
+<h1>Home</h1>
+<div class="container">
+    
+    {% for articulo in articulos %}
+   <div id="carouselExampleCaptions" class="carousel slide m-5">
+        <div class="carousel-indicators">
+        </div>
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                
+                <img src="{{ MEDIA_URL }}{{ articulo.imagen_principal.url_imagen }}"height="400"style=": contain;" class=".card-img-fixed d-block w-100" alt="...">
+                        
+            <div class="carousel-caption d-none d-md-block">
+                <h5><a href="{% url 'detalle_articulo' articulo.id_articulo %}">{{  articulo.titulo  }}</a></h5>
+            </div>
+            </div>
+            
+        </div>
+    </div>
+        {% empty %}
+            <p>No hay artículos</p>
+        {% endfor %}
 
-<h1>home</h1>
-{{usuarioactual}}
-
-
-
+        
 {% endblock %}

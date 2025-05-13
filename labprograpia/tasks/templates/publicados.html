@@ -19,6 +19,8 @@
                 {% endwith %}
                 <div class="card-body">
                         <h5><a class="link-secondary" href="{% url 'detalle_articulo' registro.id_articulo %}">{{ registro.titulo }}</a></h5>
+                        <a href="{% url 'editararticulos' %}?id_articulo={{ registro.id_articulo }}"><button type="button" class="btn btn-secondary">Editar</button></a>
+
                         
                    
                 </div>

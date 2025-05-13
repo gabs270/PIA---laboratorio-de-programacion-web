@@ -11,10 +11,10 @@
                 <article> 
                     {% with imagenprincipal.obtener_imagen_principal as imagen %}
                         {% if imagen %}
-                            <div class="row"><img src="{{ MEDIA_URL }}{{ imagen.url_imagen }}"height="350" class="col-md-12 col col-sm-12 card-img-fixed" alt="..."></div>
+                            <div class="row"><img src="{{ MEDIA_URL }}{{ imagen.url_imagen }}?v={% now 'U' %}"height="350" class="col-md-12 col col-sm-12 card-img-fixed" alt="..."></div>
                         {% endif %}
                     {% endwith %}
-                    <div class="datos row">
+                    <div class="datos row m-2">
                         <div class="col-2">
                             <img src="{{ MEDIA_URL }}{{foto}}?v={% now 'U' %}"  
                             alt="Avatar del usuario" class="rounded-circle img-thumbnail" alt="Circular con borde" style="width: 40px; height: 40px;">
@@ -54,7 +54,28 @@
 
 
                 <div class="col col-lg-3 col-md-12">
-                    <div class=""><p>hola, estoy en la derecha</p></div>
+                  <h3>Lo mas reciente</h3>
+
+
+                    {% for articuloordenado in articulosordenados %}
+                    <div id="carouselExampleCaptions" class="carousel slide">
+                            <div class="carousel-indicators">
+                            </div>
+                            <div class="carousel-inner">
+                                <div class="carousel-item active">
+                                    
+                                    <img src="{{ MEDIA_URL }}{{ articuloordenado.imagen_principal.url_imagen }}?v={% now 'U' %}"height="175"style="object-fit: contain;" class=".card-img-fixed d-block w-100" alt="...">
+                                            
+                                <div class="carousel-caption d-none d-md-block">
+                                    <h5><a href="{% url 'detalle_articulo' articuloordenado.id_articulo %}?v={% now 'U' %}">{{  articuloordenado.titulo  }}</a></h5>
+                                </div>
+                                </div>
+                                
+                            </div>
+                        </div>
+                            {% empty %}
+                                <p>No hay artículos</p>
+                            {% endfor %}
                 </div>
         </div> 
     </div>
