@@ -26,10 +26,14 @@
                         <div class=" col-sm-4 col ">
                             <div class="row justify-content-end">
                                 <div class="col-6">
-                                    <button type="button" class="btn btn-secondary">Guardar</button>
+                                    <form method="post">
+                                        {% csrf_token %}
+                                        <button type="submit" name="guardar_favorito"  class="btn btn-secondary">Guardar en Favoritos</button>
+                                    </form>
                                 </div>
                                 <div class="col-6">
-                                    <button type="button" class="btn btn-secondary">Reportar</button>
+                                    <a href="{% url 'reportar' %}?id_articulo={{ articulo.id_articulo }}"><button type="button" class="btn btn-secondary">Reportar</button></a>
+                                    
                                 </div>
                             </div>
                         </div>

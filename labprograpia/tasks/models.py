@@ -166,13 +166,14 @@ class DjangoSession(models.Model):
 
 
 class favoritos(models.Model):
-    usuario_id = models.OneToOneField('Usuarios', models.DO_NOTHING, primary_key=True)  # The composite primary key (usuario_id, articulo_id) found, that is not supported. The first column is selected.
-    articulo_id = models.ForeignKey(articulos, models.DO_NOTHING)
+    usuario = models.OneToOneField('Usuarios', models.DO_NOTHING, primary_key=True)  # The composite primary key (usuario_id, articulo_id) found, that is not supported. The first column is selected.
+    articulo = models.ForeignKey(articulos, models.DO_NOTHING)
     fecha_agregado = models.DateTimeField(blank=True, null=True)
 
     class Meta:
         managed = False
         db_table = 'favoritos'
+        unique_together = ['usuario', 'articulo']
         
 
 
@@ -190,8 +191,8 @@ class imagenes_articulos(models.Model):
 
 
 class reportes_articulos(models.Model):
-    articulo_id = models.OneToOneField(articulos, models.DO_NOTHING, primary_key=True)  # The composite primary key (articulo_id, usuario_reportador_id) found, that is not supported. The first column is selected.
-    usuario_reportador_id = models.ForeignKey('Usuarios', models.DO_NOTHING)
+    articulo = models.OneToOneField(articulos, models.DO_NOTHING, primary_key=True)  # The composite primary key (articulo_id, usuario_reportador_id) found, that is not supported. The first column is selected.
+    usuario_reportador = models.ForeignKey('Usuarios', models.DO_NOTHING)
     descripcion = models.TextField(db_collation='SQL_Latin1_General_CP1253_CI_AI')  # This field type is a guess.
     fecha_reporte = models.DateTimeField(blank=True, null=True)
 

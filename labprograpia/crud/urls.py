@@ -31,10 +31,11 @@ urlpatterns = [
     path('perfil', views.perfil, name='perfil'),
     path('editardatos', views.editardatos, name='editardatos'),
     path('nuevoarticulo', views.nuevoarticulo, name='nuevoarticulo'),
-    path('favoritos', views.favoritos, name='favoritos'),
+    path('paginafavoritos', views.paginafavoritos, name='paginafavoritos'),
     path('publicados', views.publicados, name='publicados'),
     path('<int:pk>/', views.detalle_articulo, name='detalle_articulo'),
     path('editararticulos', views.editararticulos, name='editararticulos'),
+    path('reportar', views.reportar, name='reportar'),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

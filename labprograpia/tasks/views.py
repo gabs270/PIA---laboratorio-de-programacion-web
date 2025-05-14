@@ -1,11 +1,12 @@
 from django.shortcuts import render, redirect,get_object_or_404
 from django.contrib.auth.models import User
 from django.contrib.auth import login, logout, authenticate
-from .models import usuarios, categorias,articulos,imagenes_articulos
+from .models import usuarios, categorias,articulos,imagenes_articulos,favoritos,reportes_articulos
 from django.db import IntegrityError
 from django.conf import settings
 import os
 from datetime import datetime
+from django.contrib import messages
 
 
 # Create your views here.
@@ -285,8 +286,6 @@ def publicados(request):
     return render(request,'publicados.html', {'registros': registros})
 
 
-def favoritos(request):
-    return render(request, 'favoritos.html')
 
 
 def detalle_articulo(request, pk):
@@ -298,12 +297,30 @@ def detalle_articulo(request, pk):
     avatar_url = usuario.avatar_url
     username=usuario.nombre_usuario
     
-    
     articuloss = articulos.objects.filter(estado='aceptado')
     articulosordenados = articulos.objects.filter(estado='aceptado').order_by('-fecha_actualizacion')
     
     for articuloordenado in articulosordenados:
         articuloordenado.imagen_principal = articuloordenado.imagenes.filter(es_principal=True).first()
+        
+
+    
+    try:
+        if request.method == 'POST' and 'guardar_favorito' in request.POST:
+            
+            favoritos.objects.create(
+            usuario_id=request.user.id,
+            articulo_id=articulo.id_articulo,
+            fecha_agregado=datetime.now()
+            )
+    except IntegrityError:  # Si ya existe (por unique_together)
+        print('Ya se ha agregado anteriormente')
+    except Exception as e:  # Para otros errores
+        messages.error(request, f"❌ Error: {str(e)}")
+        
+        return render(request, 'detalle_articulo.html', {'articulo': articulo,
+        'registros': registros,'imagenprincipal':imagenprincipal, 'foto':avatar_url,'username':username, 'articulos':articuloss, 'articulosordenados':articulosordenados})
+    
     
     return render(request, 'detalle_articulo.html', {'articulo': articulo,
         'registros': registros,'imagenprincipal':imagenprincipal, 'foto':avatar_url,'username':username, 'articulos':articuloss, 'articulosordenados':articulosordenados})
@@ -420,3 +437,30 @@ def editararticulos(request):
         
 
     
+def paginafavoritos(request):
+    registros=favoritos.objects.filter(usuario_id=request.user.id).select_related('articulo')
+    
+    return render(request, 'paginafavoritos.html',{
+        'registros':registros
+    })
+    
+
+
+def reportar(request):
+    id_articulo = request.GET.get('id_articulo')
+    articulo= articulos.objects.get(id_articulo=id_articulo)
+    
+    descripcion = request.POST.get('descripcion')
+    
+    if request.method=='POST' and descripcion:
+        crear_reporte=reportes_articulos(
+            articulo_id=articulo.id_articulo,
+            usuario_reportador_id=request.user.id,
+            descripcion=descripcion,
+            fecha_reporte=datetime.now()
+        )
+        crear_reporte.save()
+        return redirect('home')    
+    return render(request, 'reportar.html',{
+        'articulo':articulo
+    })

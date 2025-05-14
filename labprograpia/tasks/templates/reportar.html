@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Reportar</h1>
+
+<form method="post"  enctype="multipart/form-data" class="border rounded p-3">
+    {% if error %}
+            <div class="alert alert-danger" role="alert">
+                {{error}}
+            </div>
+        {% endif %}
+    
+        
+        {% csrf_token %}
+    <div class="mb-3">
+      <div class="row">
+        <div class="col-6">
+            <div class="col-10 p-3">
+                <label  class="form-label" >Descripcion del reporte(razones)</label>
+                <textarea type="text" class="form-control" name="descripcion" id="descripcion" rows="6" required ></textarea>
+            </div>
+            
+            <button class="btn btn-primary ">Terminar</button>
+        </div>
+        <div class="col-6">
+            <div class="col-10 p-3">
+                <label  class="form-label" >Titulo del articulo a reportar</label>
+                <input type="text" class="form-control" placeholder="{{articulo.titulo}}" name="titulo" id="titulo"  disabled>
+            </div>
+        </div>
+      </div>
+    </div>
+    
+</form>
+        
+{% endblock %}
