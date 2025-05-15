@@ -23,6 +23,9 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('signin_admin/', views.signin_admin, name='signin_admin'),
+    path('panel_administrador/', views.panel_administrador, name='panel_administrador'),
+    path('publicacionespendientes/', views.publicacionespendientes, name='publicacionespendientes'),
     path('', views.home, name='home'),
     path('signup', views.signup, name='signup'),
     path('datosdeusuario', views.datosdeusuario, name='datosdeusuario'),

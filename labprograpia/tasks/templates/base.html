@@ -33,13 +33,16 @@
                 <a class="nav-link" href="/signin">Iniciar sesion</a>
               </li>
               {% endif %}
+              {% if user.is_staff or user.is_superuser %}
+                <a class="nav-link" href="/panel_administrador">Panel Admin</a>
+              {% endif %}
+              <li class="nav-item">
+                  <a class="nav-link" href="/buscar">
+                      <span class="ms-1">Buscar</span>
+                  </a>
+              </li>
             </ul>
-             <li class="nav-item">
-                <a class="nav-link" href="/buscar">
-                    <span class="search-icon"></span>
-                    <span class="ms-1">Buscar</span>
-                </a>
-            </li>
+             
           </div>
         </div>
       </nav>

@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block content %}
+{% if user.is_staff or user.is_superuser %}
+
+<h1>Hola {{ user.username }}</h1>
+
+<div class="container d-flex flex-column justify-content-center">
+    <div class="row justify-content-center">
+        <div class="col-12">
+            <div class="row justify-content-center mb-3">
+                <div class="col-md-4 mb-3 mb-md-0">
+                    <a href="/reportesarticulos" class="btn btn-primary btn-lg w-100 py-3">Reportes Articulos</a>
+                </div>
+                <div class="col-md-4 mb-3 mb-md-0">
+                    <a href="/publicacionespendientes" class="btn btn-primary btn-lg w-100 py-3">Publicaciones Pendientes</a>
+                </div>
+                <div class="col-md-4">
+                    <a href="/adminarticulos" class="btn btn-primary btn-lg w-100 py-3">Administrador Articulos</a>
+                </div>
+            </div>
+            
+            <div class="row justify-content-center mb-3">
+                <div class="col-md-4 mb-3 mb-md-0">
+                    <a href="/adminusuarios" class="btn btn-primary btn-lg w-100 py-3">Administrador Usuarios</a>
+                </div>
+                <div class="col-md-4 mb-3 mb-md-0">
+                    <a href="/admincategorias" class="btn btn-primary btn-lg w-100 py-3">Administrador Categorias</a>
+                </div>
+                <div class="col-md-4">
+                    <a href="/agregaradministradores" class="btn btn-primary btn-lg w-100 py-3">Agregar Administrador</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+{% else %}
+<h1>Debes ser administrador para poder entrar aqui</h1>
+{% endif %}        
+{% endblock %}
+
+
+

@@ -13,7 +13,7 @@ from django.db.models import Q
 # Create your views here.
 def home(request):
     # Obtener todos los artículos ordenados por fecha (más recientes primero)
-    articulos_list = articulos.objects.filter(estado='aceptado').order_by('-fecha_actualizacion')
+    articulos_list = articulos.objects.filter(estado='aprobado').order_by('-fecha_actualizacion')
     for articulo in articulos_list:
         articulo.imagen_principal = articulo.imagenes.filter(es_principal=True).first()
     return render(request, 'home.html', {
@@ -298,8 +298,8 @@ def detalle_articulo(request, pk):
     avatar_url = usuario.avatar_url
     username=usuario.nombre_usuario
     
-    articuloss = articulos.objects.filter(estado='aceptado')
-    articulosordenados = articulos.objects.filter(estado='aceptado').order_by('-fecha_actualizacion')
+    articuloss = articulos.objects.filter(estado='aprobado')
+    articulosordenados = articulos.objects.filter(estado='aprobado').order_by('-fecha_actualizacion')
     
     for articuloordenado in articulosordenados:
         articuloordenado.imagen_principal = articuloordenado.imagenes.filter(es_principal=True).first()
@@ -476,7 +476,7 @@ def buscar(request):
     datos = categorias.objects.all().values_list('id_categoria', 'nombre')
     query = request.GET.get('q', '').strip()
     id_categoria = request.GET.get('categoria', '')
-    resultados = articulos.objects.all()
+    resultados = articulos.objects.filter(estado='aprobado')
     
     if id_categoria:
         resultados = resultados.filter(categoria_id=id_categoria)
@@ -507,3 +507,66 @@ def detalle_usuario(request, nombre_usuario):
         'usuario':usuario,
         'articulos':articulo
     })
+    
+    
+    
+    
+def signin_admin(request):
+    if request.method == 'GET':
+        return render(request, 'signin_admin.html')
+    else:
+        username = request.POST['username']
+        password = request.POST['password']
+        
+        # Autenticar al usuario
+        user = authenticate(request, username=username, password=password)
+        
+        if user is None:
+            return render(request, 'signin_admin.html', {
+                'error': 'Usuario o contraseña incorrectos'
+            })
+        
+        try:
+            if not user.is_staff: 
+                return render(request, 'signin_admin.html', {
+                    'error': 'Acceso denegado: no tienes privilegios de administrador'
+                })
+        except AttributeError:
+            return render(request, 'signin_admin.html', {
+                'error': 'Error en la verificación de administrador'
+            })
+        
+        login(request, user)
+        return redirect('panel_administrador')
+    
+    
+def panel_administrador(request):
+    return render(request, 'panel_administrador.html')
+
+
+def publicacionespendientes(request):
+    if request.method == 'POST':
+        articulo_id = request.POST.get('articulo_id')
+        try:
+            articulo = articulos.objects.get(id_articulo=articulo_id)
+            
+            if 'Publicar' in request.POST:
+                articulo.estado = 'aprobado'
+                articulo.save()
+            
+            elif 'Eliminar_articulo' in request.POST:
+                articulo.delete()
+                
+        except articulos.DoesNotExist:
+            print('No existe')
+        
+        return redirect('publicacionespendientes')
+    
+    articulos_list = articulos.objects.filter(estado='borrador').order_by('-fecha_actualizacion')
+    for articulo in articulos_list:
+        articulo.imagen_principal = articulo.imagenes.filter(es_principal=True).first()
+    
+    return render(request, 'publicacionespendientes.html', {
+        'articulos': articulos_list
+    })
+    

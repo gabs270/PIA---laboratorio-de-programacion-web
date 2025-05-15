@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% block content %}
+{% if user.is_staff or user.is_superuser %}
+<div class="container py-4">
+    <h1 class="mb-4">Publicaciones Pendientes de Aprobar</h1>
+
+    {% for articulo in articulos %}
+    <div class="card mb-5 shadow-sm">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-lg-7 col-md-6 mb-4">
+                    <div class="d-flex align-items-start mb-3">
+                        <img src="{{ MEDIA_URL }}{{ articulo.imagen_principal.url_imagen }}" 
+                             class="img-thumbnail me-3" 
+                             style="width: 200px; height: 200px; object-fit: cover;" 
+                             alt="Imagen principal">
+                        <div class="flex-grow-1">
+                            <h3><a href="{% url 'detalle_articulo' articulo.id_articulo %}">{{  articulo.titulo  }}</a></h3>
+                        </div>
+                    </div>
+                    <div class="border-top pt-3">
+                        <h5>Descripción:</h5>
+                        <p>{{ articulo.descripcion }}</p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-5 col-md-6">
+                    {% if articulo.obtener_imagenes_secundarias %}
+                    <div class="mb-3">
+                        <h5>Galería de imágenes</h5>
+                        <div class="row g-2">
+                            {% for imagen in articulo.obtener_imagenes_secundarias %}
+                            <div class="col-4 col-sm-3">
+                                <img src="{{ MEDIA_URL }}{{ imagen.url_imagen }}" 
+                                     class="img-thumbnail w-100" 
+                                     style="height: 100px; object-fit: cover;" 
+                                     alt="{{ imagen.descripcion }}">
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="border-top pt-3">
+                        <div class="mb-2"><strong>Categoría:</strong> {{ articulo.categoria_id }}</div>
+                        <div class="mb-2"><strong>Fecha del evento:</strong> {{ articulo.fecha_acontecimiento }}</div>
+                        <div><strong>Lugar:</strong> {{ articulo.lugar }}</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mt-4">
+                <div class="col-12 text-center">
+                    <form method="post" class="d-inline">
+                        {% csrf_token %}
+                        <input type="hidden" name="articulo_id" value="{{ articulo.id_articulo }}">
+                        <button type="submit" name="Publicar" class="btn btn-primary mx-2 px-4 py-2">
+                            <i class="bi bi-check-circle"></i> Publicar
+                        </button>
+                        <button type="submit" name="Eliminar_articulo" class="btn btn-danger mx-2 px-4 py-2">
+                            <i class="bi bi-trash"></i> Eliminar
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="alert alert-info text-center py-4">
+        <i class="bi bi-info-circle"></i> No hay artículos pendientes de aprobación
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="container py-5 text-center">
+    <div class="alert alert-danger">
+        <h1><i class="bi bi-shield-lock"></i> Acceso restringido</h1>
+        <p class="lead mt-3">Debes tener privilegios de administrador para acceder a esta sección</p>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
