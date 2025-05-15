@@ -36,6 +36,8 @@ urlpatterns = [
     path('<int:pk>/', views.detalle_articulo, name='detalle_articulo'),
     path('editararticulos', views.editararticulos, name='editararticulos'),
     path('reportar', views.reportar, name='reportar'),
+    path('buscar/', views.buscar, name='buscar'),
+    path('<str:nombre_usuario>/', views.detalle_usuario, name='detalle_usuario'),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,63 +1,70 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<h1>Crear Nuevo Articulo</h1>
-{{usuarioactual}}
-
-<form method="post" enctype="multipart/form-data" class="border rounded p-3">
-    {% if error %}
-            <div class="alert alert-danger" role="alert">
-                {{error}}
-            </div>
-        {% endif %}
+<div class="container mt-4">
+    <h1 class="mb-4">Crear Nuevo Artículo</h1>
     
+    <form method="post" enctype="multipart/form-data" class="border rounded p-4 bg-light">
+        {% if error %}
+        <div class="alert alert-danger" role="alert">
+            {{error}}
+        </div>
+        {% endif %}
         
         {% csrf_token %}
-    <div class="mb-3">
-      <div class="row">
-        <div class="col-6">
-            <div class="col-10 p-3">
-                <input type="text" class="form-control" placeholder="Titulo del Articulo" name="titulo" id="titulo"  required>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <input type="text" class="form-control" placeholder="Título del Artículo"  name="titulo" id="titulo" required>
+                </div>
+                
+                <div class="mb-3">
+                    <input type="text" class="form-control" placeholder="Lugar del acontecimiento" name="lugar" id="lugar" required>
+                </div>
+                
+                <div class="mb-3">
+                    <input type="date" class="form-control" placeholder="Fecha del acontecimiento" name="fecha" id="fecha" required>
+                </div>
+                
+                <div class="mb-3">
+                    <textarea class="form-control" name="descripcion" placeholder="Descripción" id="descripcion" required rows="3"></textarea>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="categoria" class="form-label">Categoría</label>
+                    <select name="categoria" class="form-select" required>
+                        <option value="">Seleccione una opción</option>
+                        {% for id_categoria, nombre in opciones %}
+                            <option value="{{ id_categoria }}">{{ nombre }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
             </div>
-            <div class="col-10 p-3">
-                <input type="text" class="form-control" placeholder="Lugar del acontecimiento" name="lugar" id="lugar" required >
-            </div>
-            <div class="col-10 p-3">
-                <input type="date" class="form-control" placeholder="Fecha del acontecimiento" name="fecha" id="fecha" required >
-            </div>
-            <div class="col-10 p-3">
-                <textarea class="form-control" placeholder="descripcion" name="descripcion" id="descripcion" required rows="3"></textarea>
-            </div>
-            <div class="col-10 p-3">
-                <select name="categoria" class="form-control">
-                    <option value="">Seleccione una opción</option>
-                    {% for id_categoria, nombre in opciones %}
-                        <option value="{{ id_categoria }}">{{ nombre }}</option>
-                    {% endfor %}
-                </select>
+            
+            <div class="col-md-6">
+                <div class="mb-4 p-3 border rounded bg-white">
+                    <div class="mb-3">
+                        <label class="form-label d-block text-center">Imagen principal</label>
+                        <input type="file" class="form-control" name="imgprincipal" accept="image/*" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label d-block text-center">Otras imágenes</label>
+                        <input type="file" class="form-control" name="imgsarticulo" accept="image/*" multiple required>
+                    </div>
+                </div>
+                
+                <div class="alert alert-info mt-3">
+                    Un administrador tendrá que aprobar tu artículo
+                </div>
             </div>
         </div>
-        <div class="col-6">
-            <div class="col-10 p-3">
-                <div class="text-center">
-                    <label for="" class="class-label">Selecciona imagen principal</label>
-                    <input type="file" name="imgprincipal" accept="image/*" required>
-                </div>
-                <div class="text-center">
-                    <label for="" class="class-label">Otras imagenes</label>
-                    <input type="file" name="imgsarticulo" accept="image/*" multiple required>
-                </div>
-                <div class="alert alert-light m-3" role="alert">
-                        Un administrador tendra que aprobar tu articulo
-                </div>
-            </div>
+        
+        <div class="text-center mt-4">
+            <button type="submit" class="btn btn-primary btn-lg">Crear Artículo</button>
         </div>
-      </div>
-    </div>
-    
-    <button class="btn btn-primary ">Crear Articulo</button>
-</form>
-
-
+    </form>
+</div>
 
 {% endblock %}

@@ -7,6 +7,7 @@ from django.conf import settings
 import os
 from datetime import datetime
 from django.contrib import messages
+from django.db.models import Q
 
 
 # Create your views here.
@@ -463,4 +464,46 @@ def reportar(request):
         return redirect('home')    
     return render(request, 'reportar.html',{
         'articulo':articulo
+    })
+    
+    
+    
+   
+from django.db.models import CharField
+from django.db.models.functions import Cast
+    
+def buscar(request):
+    datos = categorias.objects.all().values_list('id_categoria', 'nombre')
+    query = request.GET.get('q', '').strip()
+    id_categoria = request.GET.get('categoria', '')
+    resultados = articulos.objects.all()
+    
+    if id_categoria:
+        resultados = resultados.filter(categoria_id=id_categoria)
+    
+    if query:
+        resultados = resultados.annotate(
+            descripcion_str=Cast('descripcion', CharField())
+        ).filter(
+            Q(titulo__icontains=query) | 
+            Q(descripcion_str__icontains=query)
+        )
+    
+    resultados = resultados.order_by('-fecha_actualizacion')
+    
+    return render(request, 'buscar.html', {
+        'resultados': resultados,
+        'query': query,
+        'id_categoria': id_categoria,
+        'opciones': datos
+    })
+    
+    
+def detalle_usuario(request, nombre_usuario):
+    usuario = get_object_or_404(usuarios, nombre_usuario=nombre_usuario)
+    articulo=articulos.objects.filter(autor_id=usuario.id_usuario)
+    
+    return render(request,'detalle_usuario.html',{
+        'usuario':usuario,
+        'articulos':articulo
     })

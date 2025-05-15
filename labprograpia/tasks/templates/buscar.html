@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h1>Buscador de Artículos</h1>
+    
+    <div class="row">
+        <div class="col-md-6">
+            <form method="get" action="" class="mb-4">
+                <div class="form-group mb-3">
+                    <input type="text" name="q" value="{{ query }}" 
+                           class="form-control" 
+                           placeholder="Buscar en títulos y descripciones...">
+                </div>
+                
+                <div class="form-group mb-3">
+                    <select name="categoria" class="form-control">
+                        <option value="">Todas las categorías</option>
+                        {% for id_cat, nombre in opciones %}
+                            <option value="{{ id_cat }}">
+                                {{ nombre }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">Buscar</button>
+            </form>
+        </div>
+    </div>
+
+    {% if query or id_categoria %}
+        <h2>Resultados:</h2>
+        
+        {% if resultados %}
+            <div class="list-group">
+                {% for articulo in resultados %}
+                <div class="list-group-item mb-3">
+                    <h3>
+                        <a href="{% url 'detalle_articulo' articulo.id_articulo %}">
+                            {{ articulo.titulo }}
+                        </a>
+                    </h3>
+                    <p>{{ articulo.descripcion|truncatewords:30 }}</p>
+                    <small class="text-muted">
+                        Publicado el {{ articulo.fecha_actualizacion|date:"d/m/Y" }}
+                    </small>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="alert alert-warning">
+                No se encontraron resultados para tu búsqueda.
+            </div>
+        {% endif %}
+    {% endif %}
+</div>
+{% endblock %}

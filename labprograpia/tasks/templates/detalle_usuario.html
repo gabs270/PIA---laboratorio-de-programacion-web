@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    
+    <div class="row justify-content-center mb-5">
+        <div class="col-md-4 text-center mb-3 mb-md-0">
+            <img src="{{ MEDIA_URL }}{{usuario.avatar_url}}?v={% now 'U' %}"  
+                 alt="Avatar del usuario" 
+                 class="rounded-circle img-thumbnail" 
+                 style="width: 200px; height: 200px; object-fit: cover;">
+        </div>
+        <div class="col-md-4">
+            <div class="user-info">
+                <h2 class="text-capitalize mb-3"><b>{{usuario.nombre_completo}}</b></h2>
+                <p class="mb-1"><i class="bi bi-person-fill me-2"></i> <b>{{usuario.nombre_usuario}}</b></p>
+                <p class="mb-1"><i class="bi bi-geo-alt-fill me-2"></i> {{usuario.direccion}}</p>
+                <p class="mb-1"><i class="bi bi-telephone-fill me-2"></i> {{usuario.telefono}}</p>
+                <p class="mb-1"><i class="bi bi-envelope-fill me-2"></i> {{usuario.email}}</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row justify-content-center">
+        <div class="col-12 text-center mb-4">
+            <h3 class="border-bottom pb-2">Artículos Publicados</h3>
+        </div>
+        
+        {% for articulo in articulos %}
+        <div class="col-sm-6 col-lg-4 col-xl-3 mb-4"> 
+            <div class="card h-100 shadow-sm">
+                {% with articulo.obtener_imagen_principal as imagen %}
+                    {% if imagen %}
+                        <img src="{{ MEDIA_URL }}{{ imagen.url_imagen }}" 
+                             class="card-img-top img-fluid" 
+                             alt="{{ articulo.titulo }}"
+                             style="height: 180px; object-fit: cover;">
+                    {% endif %}
+                {% endwith %}
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">
+                        <a class="text-decoration-none text-dark" href="{% url 'detalle_articulo' articulo.id_articulo %}">
+                            {{ articulo.titulo }}
+                        </a>
+                    </h5>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-4">
+            <div class="alert alert-info" role="alert">
+                No hay artículos publicados.
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

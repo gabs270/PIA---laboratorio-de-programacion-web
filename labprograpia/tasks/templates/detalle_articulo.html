@@ -1,87 +1,114 @@
-
 {% extends 'base.html' %}
 
 {% block content %}
-
-    <h1>{{ articulo.titulo }}</h1>
-    <div class="container">
-        <div class="row">
-                <div class=" col col-md-9 col-sm-12">
+<div class="container mt-4">
+    <div class="row">
+        
+        <div class="col-lg-9 col-md-12 mb-4">
+            <h1 class="mb-4">{{ articulo.titulo }}</h1>
+            
+            <article class="card border-0 shadow-sm">
                 
-                <article> 
-                    {% with imagenprincipal.obtener_imagen_principal as imagen %}
-                        {% if imagen %}
-                            <div class="row"><img src="{{ MEDIA_URL }}{{ imagen.url_imagen }}?v={% now 'U' %}"height="350" class="col-md-12 col col-sm-12 card-img-fixed" alt="..."></div>
-                        {% endif %}
-                    {% endwith %}
-                    <div class="datos row m-2">
-                        <div class="col-2">
-                            <img src="{{ MEDIA_URL }}{{foto}}?v={% now 'U' %}"  
-                            alt="Avatar del usuario" class="rounded-circle img-thumbnail" alt="Circular con borde" style="width: 40px; height: 40px;">
-                        </div>
-                        <div class="col-6">
-                            <p class="text-secondary"><b>Publicado por {{ username }}</b> <br>
-                                 el {{ articulo.fecha_actualizacion }}</p>
-                        </div>
-                        <div class=" col-sm-4 col ">
-                            <div class="row justify-content-end">
-                                <div class="col-6">
-                                    <form method="post">
-                                        {% csrf_token %}
-                                        <button type="submit" name="guardar_favorito"  class="btn btn-secondary">Guardar en Favoritos</button>
-                                    </form>
-                                </div>
-                                <div class="col-6">
-                                    <a href="{% url 'reportar' %}?id_articulo={{ articulo.id_articulo }}"><button type="button" class="btn btn-secondary">Reportar</button></a>
-                                    
-                                </div>
-                            </div>
+                {% with imagenprincipal.obtener_imagen_principal as imagen %}
+                    {% if imagen %}
+                        <img src="{{ MEDIA_URL }}{{ imagen.url_imagen }}?v={% now 'U' %}" 
+                             class="img-fluid w-100 rounded-top" 
+                             style="max-height: 500px; object-fit: cover;" 
+                             alt="Imagen principal del artículo">
+                    {% endif %}
+                {% endwith %}
+                
+                
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <img src="{{ MEDIA_URL }}{{foto}}?v={% now 'U' %}"  
+                             alt="Avatar del usuario" 
+                             class="rounded-circle img-thumbnail me-3" 
+                             style="width: 50px; height: 50px;">
+                        <div>
+                            <p class="mb-0 text-muted">
+                                <b>Publicado por <a href="{% url 'detalle_usuario' nombre_usuario=username %}" class="text-decoration-none">{{ username }}</a></b><br>
+                                <small>el {{ articulo.fecha_actualizacion }}</small>
+                            </p>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col">
-                            <p class="text-secondary">Lugar del acontecimiento: {{ articulo.lugar }} <br>
-                                 Fecha del acontecimiento: {{ articulo.fecha_acontecimiento }}</p>
+                    
+                    
+                    <div class="d-flex justify-content-between mb-3">
+                        <div class="d-flex gap-2">
+                            <form method="post">
+                                {% csrf_token %}
+                                <button type="submit" name="guardar_favorito" class="btn btn-outline-secondary">
+                                    <i class="bi bi-bookmark"></i> Guardar
+                                </button>
+                            </form>
+                            <a href="{% url 'reportar' %}?id_articulo={{ articulo.id_articulo }}" class="btn btn-outline-secondary">
+                                <i class="bi bi-flag"></i> Reportar
+                            </a>
                         </div>
                     </div>
-                    <div>{{ articulo.descripcion|linebreaks }}</div>
-                    <div class="row border" >
-                        {% for imagen in registros.obtener_imagenes_secundarias %}
-                            <div class="col-md-5 col-sm-8">
-                                <img src="{{ MEDIA_URL }}{{ imagen.url_imagen }}" height="200" width="200" class="m-2 card-img-fixed" alt="{{ imagen.descripcion }}">
-                            </div>
-                        {% endfor %}
+                    
+                    
+                    <div class="mb-4">
+                        <p class="text-muted mb-1">
+                            <i class="bi bi-geo-alt"></i> Lugar: {{ articulo.lugar }}
+                        </p>
+                        <p class="text-muted">
+                            <i class="bi bi-calendar-event"></i> Fecha: {{ articulo.fecha_acontecimiento }}
+                        </p>
                     </div>
-                </article>
-                </div>
-
-
-
-                <div class="col col-lg-3 col-md-12">
-                  <h3>Lo mas reciente</h3>
-
-
-                    {% for articuloordenado in articulosordenados %}
-                    <div id="carouselExampleCaptions" class="carousel slide">
-                            <div class="carousel-indicators">
-                            </div>
-                            <div class="carousel-inner">
-                                <div class="carousel-item active">
-                                    
-                                    <img src="{{ MEDIA_URL }}{{ articuloordenado.imagen_principal.url_imagen }}?v={% now 'U' %}"height="175"style="object-fit: contain;" class=".card-img-fixed d-block w-100" alt="...">
-                                            
-                                <div class="carousel-caption d-none d-md-block">
-                                    <h5><a href="{% url 'detalle_articulo' articuloordenado.id_articulo %}?v={% now 'U' %}">{{  articuloordenado.titulo  }}</a></h5>
+                    
+                    
+                    <div class="article-content mb-4">
+                        {{ articulo.descripcion|linebreaks }}
+                    </div>
+                    
+                    
+                    {% if registros.obtener_imagenes_secundarias %}
+                    <div class="gallery border-top pt-3">
+                        <h5 class="mb-3">Galería de imágenes</h5>
+                        <div class="row g-2">
+                            {% for imagen in registros.obtener_imagenes_secundarias %}
+                                <div class="col-md-4 col-6">
+                                    <img src="{{ MEDIA_URL }}{{ imagen.url_imagen }}" 
+                                         class="img-thumbnail w-100" 
+                                         style="height: 200px; object-fit: cover;" 
+                                         alt="{{ imagen.descripcion }}">
                                 </div>
-                                </div>
-                                
-                            </div>
-                        </div>
-                            {% empty %}
-                                <p>No hay artículos</p>
                             {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
                 </div>
-        </div> 
+            </article>
+        </div>
+        
+        
+
+
+        <div class="col-lg-3 col-md-12">
+            <div class="sticky-top" style="top: 20px;">
+                <h3 class="mb-4 pb-2 border-bottom">Lo más reciente</h3>
+                
+                {% for articuloordenado in articulosordenados %}
+                <div class="card mb-3 border-0 shadow-sm">
+                    <a href="{% url 'detalle_articulo' articuloordenado.id_articulo %}?v={% now 'U' %}">
+                        {% if articuloordenado.imagen_principal %}
+                        <img src="{{ MEDIA_URL }}{{ articuloordenado.imagen_principal.url_imagen }}?v={% now 'U' %}" 
+                             class="card-img-top" 
+                             style="height: 150px; object-fit: cover;" 
+                             alt="{{ articuloordenado.titulo }}">
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ articuloordenado.titulo|truncatechars:50 }}</h5>
+                        </div>
+                    </a>
+                </div>
+                {% empty %}
+                <div class="alert alert-info">No hay artículos recientes</div>
+                {% endfor %}
+            </div>
+        </div>
     </div>
-    
+</div>
 {% endblock %}

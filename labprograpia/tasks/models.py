@@ -34,8 +34,6 @@ class articulos(models.Model):
     def obtener_imagenes_secundarias(self):
         return self.imagenes.exclude(es_principal=True)
         
-    def __str__(self):
-        return str(self.id_articulo)
     class Meta:
         managed = False
         db_table = 'articulos'
@@ -225,6 +223,7 @@ class usuarios(models.Model):
     es_administrador = models.BooleanField(blank=True, null=True)
 
   
+    
 
     class Meta:
         managed = False

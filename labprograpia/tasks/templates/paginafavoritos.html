@@ -1,39 +1,52 @@
 {% extends 'base.html' %}
 {% block content %}
+{% load static %}
 
-<h1>Favoritos</h1>
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="text-center display-5 mb-3">Favoritos</h1>
+            <hr class="mx-auto" style="width: 100px;">
+        </div>
+    </div>
 
- <div class="container text-center">
-    <div class="row ">
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
         {% for registro in registros %}
-        <div class="col-md-6 mb-4">  <!-- Cambiado a col-md-6 para 2 columnas en pantallas medianas -->
-            <div class="card" style="width: 18rem;">
+        <div class="col">
+            <div class="card h-100 shadow-sm border-0">
                 {% with registro.articulo.obtener_imagen_principal as imagen %}
                     {% if imagen %}
-                        <img src="{{ MEDIA_URL }}{{ imagen.url_imagen }}" class="card-img-top card-img-fixed" alt="...">
-                    
+                        <img src="{{ MEDIA_URL }}{{ imagen.url_imagen }}" 
+                             class="card-img-top img-fluid" 
+                             style="height: 200px; object-fit: cover;"
+                             alt="{{ registro.articulo.titulo }}">
+                    {% else %}
+                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center" 
+                             style="height: 200px;">
+                            <i class="bi bi-image text-muted" style="font-size: 3rem;"></i>
+                        </div>
                     {% endif %}
                 {% endwith %}
-                <div class="card-body">
-                        <h5><a class="link-secondary" href="{% url 'detalle_articulo' registro.articulo.id_articulo %}">{{ registro.articulo.titulo }}</a></h5>
+                
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">
+                        <a href="{% url 'detalle_articulo' registro.articulo.id_articulo %}" 
+                           class="text-decoration-none text-dark">
+                            {{ registro.articulo.titulo|truncatechars:40 }}
+                        </a>
+                    </h5>
                 </div>
             </div>
         </div>
-        
-        <!-- Cada dos tarjetas, cerramos la fila y abrimos una nueva -->
-        {% if forloop.counter|divisibleby:2 and not forloop.last %}
-    </div>
-    <div class="row">
-        {% endif %}
-        
         {% empty %}
         <div class="col-12">
-            <p>No hay registros creados.</p>
+            <div class="alert alert-info text-center py-4">
+                <i class="bi bi-info-circle-fill me-2"></i>
+                No hay artículos favoritos actualmente.
+            </div>
         </div>
         {% endfor %}
     </div>
 </div>
-
-
 
 {% endblock %}

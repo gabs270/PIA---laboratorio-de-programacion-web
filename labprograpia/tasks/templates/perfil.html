@@ -2,56 +2,102 @@
 {% block content %}
 {% load static %}
 
-<h1>Perfil</h1>
-{% if user.is_authenticated %}
-             <div class="container row">
-                <div class="alert alert-dark" role="alert">
-                    Hola, {{usuarioactual}}!
-                  </div>
-             </div> 
-             <div class="row justify-content-center">
-                <div class="col-4">
-                    <div class="text-center">
-                        <img src="{{ MEDIA_URL }}{{foto}}?v={% now 'U' %}"  
-                        alt="Avatar del usuario" class="rounded-circle img-thumbnail" alt="Circular con borde" style="width: 200px; height: 200px;">
+<div class="container py-4">
+    {% if user.is_authenticated %}
+    <!-- Encabezado -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="display-5 mb-3">Perfil</h1>
+        </div>
+    </div>
+
+    <!-- Sección de perfil -->
+    <div class="row justify-content-center mb-5">
+        <!-- Avatar -->
+        <div class="col-md-4 col-lg-3 text-center mb-4 mb-md-0">
+            <div class="position-relative d-inline-block">
+                <!-- Contenedor que fuerza forma circular -->
+                <div class="rounded-circle overflow-hidden" style="width: 200px; height: 200px;">
+                    <!-- Imagen ajustada -->
+                    <img src="{{ MEDIA_URL }}{{foto}}?v={% now 'U' %}" 
+                        class="img-fluid h-100 w-100" 
+                        style="object-fit: cover;"
+                        alt="Avatar de {{nombrecompleto}}">
+                </div>
+            </div>
+        </div>
+
+        <!-- Información -->
+        <div class="col-md-6 col-lg-5">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body">
+                    <h2 class="card-title text-capitalize mb-4">{{nombrecompleto}}</h2>
+                    
+                    <ul class="list-unstyled">
+                        <li class="mb-3">
+                            <i class="bi bi-person-badge-fill me-2 text-primary"></i>
+                            <strong>Usuario:</strong> {{usuarioactual}}
+                        </li>
+                        <li class="mb-3">
+                            <i class="bi bi-geo-alt-fill me-2 text-primary"></i>
+                            <strong>Dirección:</strong> {{direccion|default:"No especificada"}}
+                        </li>
+                        <li class="mb-3">
+                            <i class="bi bi-telephone-fill me-2 text-primary"></i>
+                            <strong>Teléfono:</strong> {{telefono|default:"No especificado"}}
+                        </li>
+                        <li class="mb-3">
+                            <i class="bi bi-envelope-fill me-2 text-primary"></i>
+                            <strong>Correo:</strong> {{correo}}
+                        </li>
+                    </ul>
+                    <!-- Botón de edición -->
+                    <a href="/editardatos" class="btn btn-secondary position-absolute bottom-0 end-0 rounded-circle">
+                        <i class="bi bi-pencil-fill">Editar</i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Botones de acción -->
+    <div class="row justify-content-center mb-4">
+        <div class="col-md-10 col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-3">
+                    <div class="row g-2">
+                        <div class="col-md-4">
+                            <a href="/paginafavoritos" class="btn btn-primary w-100 py-2">
+                                <i class="bi bi-heart-fill me-2">Favoritos</i>
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <a href="/publicados" class="btn btn-primary w-100 py-2">
+                                <i class="bi bi-file-earmark-post me-2">Mis Artículos</i>
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <a href="/nuevoarticulo" class="btn btn-primary w-100 py-2">
+                                <i class="bi bi-plus-circle me-2">Nuevo articulo</i>
+                            </a>
+                        </div>
                     </div>
                 </div>
-                <div class="col-4">
-                    <label class="fs-3 text-capitalize" name="nombrecompleto"><b>{{nombrecompleto}}</b></label><br>
-                    <label name="nombredeusuario"><b>{{usuarioactual}}</b></label><br>
-                    <label name="direccion">{{direccion}}</label><br>
-                    <label name="telefono">{{telefono}}</label><br>
-                    <label name="correo">{{correo}}</label><br>
-                </div>
-                <div class="col-1  align-self-end">
-                    <a href="/editardatos"><button type="button" class="btn btn-secondary">Editar</button></a>
-                </div>
-              </div>  
-
-    <div class="container text-center m-5">
-    <div class="row align-items-center">
-        <div class="col">
-            <a href="/paginafavoritos"><button type="button" class="btn btn-primary p-3">Articulos Favoritos</button></a>
-        </div>
-        <div class="col">
-            <a href="/publicados"><button type="button" class="btn btn-primary p-3">Articulos Publicados</button></a>
-        </div>
-        <div class="col">
-            <a href="/nuevoarticulo"><button type="button" class="btn btn-primary p-3">Nuevo Articulo</button></a>
+            </div>
         </div>
     </div>
+
+    {% else %}
+    <!-- No autenticado -->
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-8 col-lg-6">
+            <div class="alert alert-dark text-center py-4">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                Debes <a href="{% url 'login' %}" class="alert-link">iniciar sesión</a> para ver esta página.
+            </div>
+        </div>
     </div>
-
-{% else %}
-<div class="container m-50">
-    <div class="alert alert-dark" role="alert">
-        Favor de iniciar sesion.
-      </div>
-</div>   
-{% endif %}
-
-
-
-
+    {% endif %}
+</div>
 
 {% endblock %}

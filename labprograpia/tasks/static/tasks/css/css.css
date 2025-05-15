@@ -2,3 +2,22 @@
     object-fit: cover;
     object-position: center;
 }
+
+.search-icon {
+        display: inline-block;
+        width: 1em;
+        height: 1em;
+        border: 2px solid currentColor;
+        border-radius: 50%;
+        position: relative;
+    }
+    .search-icon::after {
+        content: "";
+        position: absolute;
+        bottom: -5px;
+        right: -5px;
+        width: 0.6em;
+        height: 2px;
+        background: currentColor;
+        transform: rotate(45deg);
+    }
