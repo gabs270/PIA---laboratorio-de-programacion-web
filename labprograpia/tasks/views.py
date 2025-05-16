@@ -708,3 +708,45 @@ def adminagregar(request):
     return render(request,'adminagregar.html',{
         'registros':registros,
     })
+    
+    
+    
+    
+def admincategorias(request):
+    if request.method=='POST' and 'eliminar_categoria' in request.POST:
+        categoria=request.POST.get('id_categoria')
+        borrar_categoria=categorias.objects.get(id_categoria=categoria)
+        borrar_categoria.delete()
+    registros=categorias.objects.all()
+    return render(request,'admincategorias.html',{
+        'registros':registros,
+    })
+def admincrearcat(request):
+    nombre=request.POST.get('nombre')
+    descripcion=request.POST.get('descripcion')
+    if request.method=='POST' and nombre and descripcion:
+        categoria=categorias(
+            nombre=nombre,
+            descripcion=descripcion
+        )
+        categoria.save()
+        return redirect('admincategorias')
+    
+    return render(request,'admincrearcat.html')
+
+def admineditarcat(request):
+    id_categoria=request.GET.get('id_categoria')
+    registro=categorias.objects.get(id_categoria=id_categoria)
+    
+    nombre=request.POST.get('nombre')
+    descripcion=request.POST.get('descripcion')
+    
+    if request.method=='POST' and nombre and descripcion:
+        registro.nombre=nombre
+        registro.descripcion=descripcion
+        registro.save()
+        return redirect('admincategorias')
+        
+    return render(request,'admineditarcat.html',{
+        'registro':registro,
+    })

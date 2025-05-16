@@ -22,7 +22,7 @@ class articulos(models.Model):
     fecha_acontecimiento = models.DateField(blank=True, null=True)
     fecha_actualizacion = models.DateTimeField(blank=True, null=True)
     autor = models.ForeignKey('Usuarios', models.DO_NOTHING)
-    categoria = models.ForeignKey('Categorias', models.DO_NOTHING, blank=True, null=True,choices=ESTADOS,default='borrador')
+    categoria = models.ForeignKey('Categorias', on_delete=models.CASCADE, blank=True, null=True,choices=ESTADOS,default='borrador')
     estado = models.CharField(max_length=20, db_collation='SQL_Latin1_General_CP1253_CI_AI', blank=True, null=True)
 
     def obtener_imagen_principal(self):
