@@ -318,7 +318,6 @@ def detalle_articulo(request, pk):
         print('Ya se ha agregado anteriormente')
     except Exception as e:  # Para otros errores
         messages.error(request, f"❌ Error: {str(e)}")
-        
         return render(request, 'detalle_articulo.html', {'articulo': articulo,
         'registros': registros,'imagenprincipal':imagenprincipal, 'foto':avatar_url,'username':username, 'articulos':articuloss, 'articulosordenados':articulosordenados})
     
@@ -449,23 +448,28 @@ def paginafavoritos(request):
 
 def reportar(request):
     id_articulo = request.GET.get('id_articulo')
-    articulo= articulos.objects.get(id_articulo=id_articulo)
-    
+    articulo = articulos.objects.get(id_articulo=id_articulo)
     descripcion = request.POST.get('descripcion')
     
-    if request.method=='POST' and descripcion:
-        crear_reporte=reportes_articulos(
-            articulo_id=articulo.id_articulo,
-            usuario_reportador_id=request.user.id,
-            descripcion=descripcion,
-            fecha_reporte=datetime.now()
-        )
-        crear_reporte.save()
-        return redirect('home')    
-    return render(request, 'reportar.html',{
-        'articulo':articulo
-    })
+    if request.method == 'POST' and descripcion:
+        try:
+            crear_reporte = reportes_articulos(
+                articulo_id=articulo.id_articulo,
+                usuario_reportador_id=request.user.id,
+                descripcion=descripcion,
+                fecha_reporte=datetime.now()
+            )
+            crear_reporte.save()
+            return redirect('home')
+        except IntegrityError:
+            return render(request, 'reportar.html', {
+                'error': 'Ya has reportado este artículo, por favor vuelve al inicio',
+                'articulo': articulo
+            })
     
+    return render(request, 'reportar.html', {
+        'articulo': articulo
+    })
     
     
    
@@ -570,3 +574,35 @@ def publicacionespendientes(request):
         'articulos': articulos_list
     })
     
+    
+    
+def reportes(request):
+    if request.method == 'POST':
+        id_reporte = request.POST.get('id_reporte')
+        id_articulo= request.POST.get('id_articulo')
+        try:
+            id_reporte = reportes_articulos.objects.get(id=id_reporte)
+            articulo=articulos.objects.get(id_articulo=id_articulo)
+            
+            if 'ignorar' in request.POST:
+                id_reporte.delete()
+            
+            elif 'Eliminar_articulo' in request.POST:
+                articulo.delete()
+                id_reporte.delete()
+                
+        except articulos.DoesNotExist:
+            print('No existe')
+        
+        return redirect('reportes')
+    
+    
+    registros=reportes_articulos.objects.all().select_related('articulo', 'usuario_reportador').order_by('-fecha_reporte')
+    for registro in registros:
+        registro.articulo.imagen_principal = registro.articulo.imagenes.filter(es_principal=True).first()
+        
+    
+        
+    return render(request, 'reportes.html',{
+        'registros':registros,
+    })

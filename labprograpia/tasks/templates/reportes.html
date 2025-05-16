@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Reportes</h1>
+    
+    {% for reporte in registros %}
+        <div class="card mb-4 shadow-sm">
+            
+            <div class="row g-0 p-3">
+                
+                <div class="col-md-3 d-flex flex-column align-items-center">
+                    <img src="{{ MEDIA_URL }}{{ reporte.usuario_reportador.avatar_url }}?v={% now 'U' %}" 
+                         class="rounded-circle img-thumbnail mb-2" 
+                         alt="Avatar usuario" 
+                         style="width: 120px; height: 120px; object-fit: cover;">
+                    <a href="{% url 'detalle_usuario' reporte.usuario_reportador.nombre_usuario %}"><span class="h5 text-center">{{ reporte.usuario_reportador.nombre_completo }}</span></a>
+                </div>
+                
+                
+                <div class="col-md-5">
+                    <div class="d-flex align-items-start">
+                        <img src="{{ MEDIA_URL }}{{ reporte.articulo.imagen_principal.url_imagen }}" 
+                             class="img-thumbnail me-3" 
+                             style="width: 120px; height: 120px; object-fit: cover;" 
+                             alt="Imagen artículo">
+                        <div>
+                            <h5 class="mt-0">Artículo:</h5>
+                            <a href="{% url 'detalle_articulo' reporte.articulo.id_articulo %}"><p class="lead">{{ reporte.articulo.titulo }}</p></a>
+                        </div>
+                    </div>
+                </div>
+                
+                
+                <div class="col-md-4">
+                    <div class="h-100 p-3 bg-white border rounded">
+                        <h5>Descripción:</h5>
+                        <p class="mb-0">{{ reporte.descripcion }}</p>
+                    </div>
+                </div>
+            </div>
+            
+            
+            <div class="card-footer bg-transparent">
+                <form method="post" class="d-flex justify-content-end">
+                    {% csrf_token %}
+                    <input type="hidden" name="id_reporte" value="{{ reporte.id }}">
+                    <input type="hidden" name="id_articulo" value="{{ reporte.articulo.id_articulo }}">
+                    <button type="submit" name="ignorar" class="btn btn-outline-secondary mx-2 px-4 py-2">
+                        <i class="bi bi-check-circle"></i> Ignorar
+                    </button>
+                    <button type="submit" name="Eliminar_articulo" class="btn btn-danger mx-2 px-4 py-2">
+                        <i class="bi bi-trash"></i> Eliminar Artículo
+                    </button>
+                </form>
+            </div>
+        </div>
+    
+    {% empty %}
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle"></i> No hay reportes pendientes.
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

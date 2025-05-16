@@ -189,14 +189,16 @@ class imagenes_articulos(models.Model):
 
 
 class reportes_articulos(models.Model):
-    articulo = models.OneToOneField(articulos, models.DO_NOTHING, primary_key=True)  # The composite primary key (articulo_id, usuario_reportador_id) found, that is not supported. The first column is selected.
-    usuario_reportador = models.ForeignKey('Usuarios', models.DO_NOTHING)
-    descripcion = models.TextField(db_collation='SQL_Latin1_General_CP1253_CI_AI')  # This field type is a guess.
+    id = models.AutoField(primary_key=True)
+    articulo = models.ForeignKey('articulos', models.DO_NOTHING) 
+    usuario_reportador = models.ForeignKey('usuarios', models.DO_NOTHING)
+    descripcion = models.TextField(db_collation='SQL_Latin1_General_CP1253_CI_AI') 
     fecha_reporte = models.DateTimeField(blank=True, null=True)
 
     class Meta:
         managed = False
         db_table = 'reportes_articulos'
+        unique_together = ['articulo', 'usuario_reportador']
 
 
 class Sysdiagrams(models.Model):
