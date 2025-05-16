@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+
+<h1>Editar datos</h1>
+
+<form method="POST"  enctype="multipart/form-data" class="border rounded p-3">
+    {% if error %}
+            <div class="alert alert-danger" role="alert">
+                {{error}}
+            </div>
+        {% endif %}
+    
+        
+        {% csrf_token %}
+    <div class="mb-3">
+      <div class="row">
+        <div class="col-6">
+            <div class="col-10 p-3">
+                <label  class="form-label" >Nombre de Usuario</label>
+                <input type="text" class="form-control" placeholder="{{registros.nombre_usuario}}" name="username" id="username"  disabled>
+            </div>
+            <div class="col-10 p-3">
+                <input type="text" class="form-control text-capitalize" value="{{registros.nombre_completo}}" name="nombrecompleto" id="nombrecompleto"  >
+            </div>
+            <div class="col-10 p-3">
+                <input type="text" class="form-control" value="{{registros.direccion}}" name="direccion" id="direccion"  >
+            </div>
+            <div class="col-10 p-3">
+                <input type="tel" class="form-control" value="{{registros.telefono}}" name="telefono" id="telefono"  >
+            </div>
+            <div class="col-10 p-3">
+                <input type="email" class="form-control" value="{{registros.email}}" name="correo" id="correo"  >
+            </div>
+            
+            <button class="btn btn-primary ">Terminar</button>
+        </div>
+        <div class="col-6">
+            <div class="col-10 p-3">
+                <div class="text-center">
+                     <img src="{{MEDIA_URL}}{{registros.avatar_url}}?v={% now 'U' %}"   
+                        alt="Avatar del usuario" class="rounded-circle img-thumbnail" alt="Circular con borde" style="width: 200px; height: 200px;">
+                    
+                    <input class="form-control" type="file" name="avatar" accept="image/png" >
+                </div>
+                <div class="container">
+                    <p>Es administrador:</p>
+                    <input type="text"class="form-control"value="{{registros.es_administrador}}" disabled>
+                </div>
+            </div>
+        </div>
+      </div>
+    </div>
+    
+</form>
+
+{% endblock %}

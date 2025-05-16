@@ -164,8 +164,8 @@ class DjangoSession(models.Model):
 
 
 class favoritos(models.Model):
-    usuario = models.OneToOneField('Usuarios', models.DO_NOTHING, primary_key=True)  # The composite primary key (usuario_id, articulo_id) found, that is not supported. The first column is selected.
-    articulo = models.ForeignKey(articulos, models.DO_NOTHING)
+    usuario = models.OneToOneField('Usuarios',on_delete=models.CASCADE, primary_key=True ) 
+    articulo = models.ForeignKey(articulos, on_delete=models.CASCADE)
     fecha_agregado = models.DateTimeField(blank=True, null=True)
 
     class Meta:

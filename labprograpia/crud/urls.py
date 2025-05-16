@@ -28,6 +28,7 @@ urlpatterns = [
     path('publicacionespendientes/', views.publicacionespendientes, name='publicacionespendientes'),
     path('reportes/', views.reportes, name='reportes'),
     path('adminarticulos/', views.adminarticulos, name='adminarticulos'),
+    path('admineditarusuarios/<int:id_usuario>/', views.admineditarusuarios, name='admineditarusuarios'),
     path('adminusuarios/', views.adminusuarios, name='adminusuarios'),
     path('', views.home, name='home'),
     path('signup', views.signup, name='signup'),

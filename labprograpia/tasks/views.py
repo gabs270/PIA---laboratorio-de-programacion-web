@@ -632,4 +632,54 @@ def adminarticulos(request):
     
     
 def adminusuarios(request):
-    return render(request, 'adminusuarios.html')
+    if request.method=='POST':
+        id_usuario= request.POST.get('id_usuario')
+        
+        usuario=usuarios.objects.get(id_usuario=id_usuario)
+        if 'eliminar_usuario' in request.POST:
+            usuario.delete()
+            return redirect('adminusuarios')
+    
+    registros=usuarios.objects.all().order_by('-id_usuario')
+    return render(request, 'adminusuarios.html',{
+        'registros':registros,
+    })
+def admineditarusuarios(request,id_usuario):
+    registros=usuarios.objects.get(id_usuario=id_usuario)
+    
+    if request.method=='POST':
+        registros.nombre_completo = request.POST.get('nombrecompleto')
+        registros.direccion = request.POST.get('direccion')
+        registros.telefono = request.POST.get('telefono')
+        registros.email = request.POST.get('correo')
+                
+        if request.method == 'POST' and request.FILES.get('avatar'):
+            avatar_file = request.FILES['avatar']
+            print(request.FILES)
+                    
+            extension = avatar_file.name.split('.')[-1]
+            nuevo_nombre = f"avatar_{request.user.username}.{extension}"
+            avatar_file.name = nuevo_nombre
+                   
+            upload_dir = os.path.join(settings.MEDIA_ROOT, 'avatars')
+            os.makedirs(upload_dir, exist_ok=True)
+                    
+            file_path = f'avatars/{avatar_file.name}'  
+            with open(os.path.join(settings.MEDIA_ROOT, file_path), 'wb+') as f:
+                for chunk in avatar_file.chunks():
+                    f.write(chunk)
+            registros.avatar_url = file_path
+                        
+        if registros.nombre_completo and registros.direccion and registros.telefono and registros.email:  
+            registros.save()
+            return redirect('adminusuarios')
+        else:
+             return render(request, 'admineditarusuarios.html',{
+                'error':'Todos los campos son obligatorios',
+                'registros':registros,
+                })
+        
+    
+    return render(request, 'admineditarusuarios.html',{
+        'registros':registros,
+    })
