@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block content %}
+{% if user.is_superuser %}
+<div class="container">
+    <div class="row justify-content-center mt-4">
+        {% if error %}
+            <div class="alert alert-danger" role="alert">
+                {{error}}
+            </div>
+        {% endif %}
+        <div class="col-md-6 border rounded p-4">
+            <h2 class="h4 mb-4">Agregar administradores</h2>
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="usuario" class="form-label">Seleccionar usuario</label>
+                    <select name="usuario" class="form-select" required>
+                        <option value="" selected disabled>-- Seleccione un usuario --</option>
+                        {% for id_usuario, nombre_usuario in registros %}
+                            <option value="{{ id_usuario }}">{{ nombre_usuario }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button type="submit" name="crear_admin" class="btn btn-primary">
+                    <i class="bi bi-person-check me-1"></i> Hacer admin
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="container py-5 text-center">
+    <div class="alert alert-danger">
+        <h1><i class="bi bi-shield-lock"></i> Acceso restringido</h1>
+        <p class="lead mt-3">Debes tener privilegios de Superuser para acceder a esta sección</p>
+    </div>
+</div>
+{% endif %}        
+{% endblock %}

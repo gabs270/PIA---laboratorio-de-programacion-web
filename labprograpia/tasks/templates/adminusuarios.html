@@ -18,7 +18,7 @@
                 <div class="card-body py-2">
                     <div class="row">
                         <div class="col-md-3">
-                            <h5 class="mb-1">{{ registro.nombre_usuario }}</h5>
+                            <a href="{% url 'detalle_usuario' nombre_usuario=registro.nombre_usuario %}"><h5 class="mb-1">{{ registro.nombre_usuario }}</h5></a>
                             <p class="text-muted mb-1"><small>Usuario</small></p>
                         </div>
                         <div class="col-md-3">

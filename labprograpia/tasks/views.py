@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect,get_object_or_404
 from django.contrib.auth.models import User
 from django.contrib.auth import login, logout, authenticate
-from .models import usuarios, categorias,articulos,imagenes_articulos,favoritos,reportes_articulos
+from .models import usuarios, categorias,articulos,imagenes_articulos,favoritos,reportes_articulos,AuthUser
 from django.db import IntegrityError
 from django.conf import settings
 import os
@@ -81,7 +81,8 @@ def datosdeusuario(request):
                 telefono=telefono,
                 email=correo,
                 id_usuario=idusuario,
-                avatar_url=file_path
+                avatar_url=file_path,
+                es_administrador=0
                 
             )
             crear_usuario.save()
@@ -636,10 +637,11 @@ def adminusuarios(request):
         id_usuario= request.POST.get('id_usuario')
         
         usuario=usuarios.objects.get(id_usuario=id_usuario)
+        usuariodjango=AuthUser.objects.get(id=id_usuario)
         if 'eliminar_usuario' in request.POST:
+            usuariodjango.delete()
             usuario.delete()
             return redirect('adminusuarios')
-    
     registros=usuarios.objects.all().order_by('-id_usuario')
     return render(request, 'adminusuarios.html',{
         'registros':registros,
@@ -678,8 +680,31 @@ def admineditarusuarios(request,id_usuario):
                 'error':'Todos los campos son obligatorios',
                 'registros':registros,
                 })
-        
     
     return render(request, 'admineditarusuarios.html',{
+        'registros':registros,
+    })
+    
+    
+    
+def adminagregar(request):
+    if request.method=='POST':
+        usuario=request.POST.get('usuario')
+        try:
+            if 'crear_admin' in request.POST:
+                usuario1=usuarios.objects.get(id_usuario=usuario)
+                usuario2=AuthUser.objects.get(id=usuario)
+                usuario1.es_administrador=1
+                usuario2.is_staff=1
+                usuario1.save()
+                usuario2.save()
+        except:
+            registros = usuarios.objects.filter(es_administrador=0).values_list('id_usuario', 'nombre_usuario').order_by('-id_usuario')
+            return render(request,'adminagregar.html',{
+                'registros':registros,
+                'error':'Todos los campos son obligatorios'
+            })
+    registros = usuarios.objects.filter(es_administrador=0).values_list('id_usuario', 'nombre_usuario').order_by('-id_usuario')
+    return render(request,'adminagregar.html',{
         'registros':registros,
     })
