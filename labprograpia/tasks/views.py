@@ -606,3 +606,30 @@ def reportes(request):
     return render(request, 'reportes.html',{
         'registros':registros,
     })
+    
+    
+    
+    
+    
+
+def adminarticulos(request):
+    if request.method=='POST':
+        id_articulo= request.POST.get('id_articulo')
+        
+        articulo=articulos.objects.get(id_articulo=id_articulo)
+        if 'Eliminar_articulo' in request.POST:
+            articulo.delete()
+            return redirect('adminarticulos')
+        
+    registros=articulos.objects.all().select_related('autor', 'categoria').order_by('-fecha_actualizacion')
+    for articulo in registros:
+        articulo.imagen_principal = articulo.imagenes.filter(es_principal=True).first()
+        
+    return render(request, 'adminarticulos.html',{
+        'registros':registros,
+    })
+    
+    
+    
+def adminusuarios(request):
+    return render(request, 'adminusuarios.html')
