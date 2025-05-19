@@ -9,7 +9,7 @@
             
             <article class="card border-0 shadow-sm">
                 
-                {% with imagenprincipal.obtener_imagen_principal as imagen %}
+                {% with registros.obtener_imagen_principal as imagen %}
                     {% if imagen %}
                         <img src="{{ MEDIA_URL }}{{ imagen.url_imagen }}?v={% now 'U' %}" 
                              class="img-fluid w-100 rounded-top" 

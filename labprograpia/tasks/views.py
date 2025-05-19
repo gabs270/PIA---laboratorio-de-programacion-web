@@ -6,7 +6,6 @@ from django.db import IntegrityError
 from django.conf import settings
 import os
 from datetime import datetime
-from django.contrib import messages
 from django.db.models import Q
 
 
@@ -293,20 +292,16 @@ def publicados(request):
 def detalle_articulo(request, pk):
     articulo = get_object_or_404(articulos, pk=pk)
     registros = articulos.objects.get(id_articulo=articulo.id_articulo)
-    imagenprincipal = articulos.objects.get(id_articulo=articulo.id_articulo)
     
     usuario = usuarios.objects.get(id_usuario=articulo.autor_id)
     avatar_url = usuario.avatar_url
     username=usuario.nombre_usuario
     
-    articuloss = articulos.objects.filter(estado='aprobado')
     articulosordenados = articulos.objects.filter(estado='aprobado').order_by('-fecha_actualizacion')
     
     for articuloordenado in articulosordenados:
         articuloordenado.imagen_principal = articuloordenado.imagenes.filter(es_principal=True).first()
         
-
-    
     try:
         if request.method == 'POST' and 'guardar_favorito' in request.POST:
             
@@ -315,16 +310,13 @@ def detalle_articulo(request, pk):
             articulo_id=articulo.id_articulo,
             fecha_agregado=datetime.now()
             )
-    except IntegrityError:  # Si ya existe (por unique_together)
-        print('Ya se ha agregado anteriormente')
-    except Exception as e:  # Para otros errores
-        messages.error(request, f"❌ Error: {str(e)}")
+    except Exception as e:  
         return render(request, 'detalle_articulo.html', {'articulo': articulo,
-        'registros': registros,'imagenprincipal':imagenprincipal, 'foto':avatar_url,'username':username, 'articulos':articuloss, 'articulosordenados':articulosordenados})
+        'registros': registros, 'foto':avatar_url,'username':username, 'articulosordenados':articulosordenados})
     
     
     return render(request, 'detalle_articulo.html', {'articulo': articulo,
-        'registros': registros,'imagenprincipal':imagenprincipal, 'foto':avatar_url,'username':username, 'articulos':articuloss, 'articulosordenados':articulosordenados})
+        'registros': registros, 'foto':avatar_url,'username':username, 'articulosordenados':articulosordenados})
     
     
     
@@ -464,7 +456,7 @@ def reportar(request):
             return redirect('home')
         except IntegrityError:
             return render(request, 'reportar.html', {
-                'error': 'Ya has reportado este artículo, por favor vuelve al inicio',
+                'error': 'No se ha podido agregar a favoritos, por favor vuelve al inicio o inicie sesion',
                 'articulo': articulo
             })
     
